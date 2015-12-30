@@ -317,7 +317,7 @@ DWORD WINAPI MyThread(LPVOID p){
 		TString mes = GetLastErrorDescription();
 	}
 
-	delete in; //освобождаю память под структуру
+	delete in; 
 	return 0;
 }
 
@@ -993,13 +993,11 @@ namespace GS_UpdateDataBase {
 				 /*********************************************************/
 
 				 ForThread *SendPr;
+				 TString s;
 
-				 iCountDB = 2;
 				 for (int i = 0; i < iCountDB-1; i++){	
 					 SendPr = new ForThread;
 
-
-					 TString s = TString();
 					 s = AddStrings(quote, msclr::interop::marshal_as<TString>((String^)dgvDBPath->Rows[i]->Cells[1]->Value), quote);
 
 					 basic_ostringstream<TCHAR> out;
@@ -1007,22 +1005,13 @@ namespace GS_UpdateDataBase {
 					 out << AddStrings(quote, sGedeminPath, quote).c_str()
 						 << " /sn " << s.c_str()
 						 << " /user Administrator"
-						 << " /password Administrator";
-					 //<< " /q /SP "
-					 /*<<  in->NSPath
-					 << " /sfn "
-					 << in->NSFileName*/
-					 //<< endl;
-					// TString s = TString();
-					// s = msclr::interop::marshal_as<TString>((String^)dgvDBPath->Rows[i]->Cells[1]->Value);
-					 //SendPr->NSFileName = AddStrings(quote, SetDouleSlash(sNSFileName), quote).c_str();
-					 //SendPr->NSPath = sNSDirPath.c_str();//AddStrings(quote, SetDouleSlash(sNSDirPath), quote).c_str();
-		
-					// SendPr->DBPath = s.c_str();//AddStrings(quote, SetDouleSlash(TString(msclr::interop::marshal_as<TString>((String^)dgvDBPath->Rows[i]->Cells[1]->Value))), quote).c_str();
-					 //s = out.str();
-					 //SendPr->GedeminPath = s.c_str();//AddStrings(quote, SetDouleSlash(sGedeminPath), quote).c_str();
-
-					 //SendPr->GedeminPath = L"calc";
+						 << " /password Administrator"
+						 << " /q /SP "
+					     <<  AddStrings(quote, sNSDirPath, quote).c_str()
+					     << " /sfn "
+					     << AddStrings(quote, sNSFileName, quote).c_str()
+					     << endl;
+					
 					 SendPr->str = out.str();
 
 					 Thread_Arr[i] =  CreateThread(0, 0, MyThread, SendPr, 0, 0);		

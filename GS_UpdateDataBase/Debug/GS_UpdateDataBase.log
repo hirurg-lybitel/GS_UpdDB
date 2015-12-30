@@ -1,4 +1,7 @@
-﻿  GS_UpdateDataBase.cpp
-c:\users\administrator\documents\visual studio 2010\projects\gs_updatedatabase\gs_updatedatabase\Form1.h(179): warning C4244: аргумент: преобразование "std::streamoff" в "DWORD", возможна потеря данных
-c:\users\administrator\documents\visual studio 2010\projects\gs_updatedatabase\gs_updatedatabase\Form1.h(180): warning C4018: <: несоответствие типов со знаком и без знака
-  GS_UpdateDataBase.vcxproj -> C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GS_UpdateDataBase\Debug\GS_UpdateDataBase.exe
+﻿  stdafx.cpp
+  AssemblyInfo.cpp
+  GS_UpdateDataBase.cpp
+d:\golden software\gs_databaseupdate\gs_updatedatabase\Form1.h(179): warning C4244: аргумент: преобразование "std::streamoff" в "DWORD", возможна потеря данных
+d:\golden software\gs_databaseupdate\gs_updatedatabase\Form1.h(180): warning C4018: <: несоответствие типов со знаком и без знака
+  Создание кода...
+  GS_UpdateDataBase.vcxproj -> D:\Golden Software\GS_DataBaseUpdate\Debug\GS_UpdateDataBase.exe
