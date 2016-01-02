@@ -1,7 +1,0 @@
-﻿  stdafx.cpp
-  AssemblyInfo.cpp
-  GS_UpdateDataBase.cpp
-d:\golden software\gs_databaseupdate\gs_updatedatabase\Form1.h(179): warning C4244: аргумент: преобразование "std::streamoff" в "DWORD", возможна потеря данных
-d:\golden software\gs_databaseupdate\gs_updatedatabase\Form1.h(180): warning C4018: <: несоответствие типов со знаком и без знака
-  Создание кода...
-  GS_UpdateDataBase.vcxproj -> D:\Golden Software\GS_DataBaseUpdate\Debug\GS_UpdateDataBase.exe
