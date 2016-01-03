@@ -17,6 +17,9 @@
 #include <Psapi.h>
 #pragma comment(lib,"psapi.lib")
 
+#include "frmOptions.h"
+//#include "AddStrings.h"
+
 using namespace std;
 
 #ifndef UNICODE  
@@ -32,8 +35,10 @@ TString sGedeminPath = TString();
 TString sCurrentDir = TString();;
 TString sLastDBPath = TString();
 TString sLastNSPath = TString();
+BOOL SearchGedeminAfterOpen = TRUE;
 TString searchDBPath = L"LastDBPath";
 TString searchNSPath = L"LastNSPath";
+TString searchGedeminAfterOpen = L"SearchGedeminAfterOpen";
 /************************************/
 
 struct ForThread {
@@ -302,7 +307,7 @@ DWORD WINAPI MyThread(LPVOID p) {
 		CloseHandle(pi.hThread);
 	}
 	else {
-		TString mes = GetLastErrorDescription();
+		//TString mes = GetLastErrorDescription();
 	}
 
 	delete in;
@@ -322,9 +327,6 @@ namespace GS_DataBaseUpdate {
 	using namespace System::Threading;
 	using namespace System::Runtime::InteropServices;
 
-	/// <summary>
-	/// —‚Ó‰Í‡ ‰Îˇ frmMain
-	/// </summary>
 	public ref class frmMain : public System::Windows::Forms::Form {
 	public:
 		frmMain(void) {
@@ -345,7 +347,8 @@ namespace GS_DataBaseUpdate {
 	private: System::Windows::Forms::ToolStripDropDownButton^  toolStripDropDownButton1;
 	private: System::Windows::Forms::ToolStripMenuItem^  tsmiExit;
 	private: System::Windows::Forms::ToolStripDropDownButton^  toolStripDropDownButton2;
-	private: System::Windows::Forms::ToolStripMenuItem^  Ô‡‡ÏÂÚ˚ToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  tsmiOptions;
+
 	private: System::Windows::Forms::ToolStripMenuItem^  ÓœÓ„‡ÏÏÂToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  Ó·ÌÓ‚ÎÂÌËÂToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripButton^  tsbRun;
@@ -365,24 +368,11 @@ namespace GS_DataBaseUpdate {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  NameSpacePath;
 	private: System::Windows::Forms::GroupBox^  gbStatus;
 	private: System::Windows::Forms::DataGridView^  dgvEventLog;
-
-
-
-
-
 	private: System::Windows::Forms::StatusStrip^  statusStrip2;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Description;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  isError;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Time;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Date;
-
-
-
-
-
-
-
-
 
 	protected:
 
@@ -396,10 +386,10 @@ namespace GS_DataBaseUpdate {
 		/// </summary>
 		void InitializeComponent(void) {
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(frmMain::typeid));
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle3 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle4 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle5 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle6 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle7 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle8 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			this->ofdDBPath = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->ofdNameSpace = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->ofdGedeminPath = (gcnew System::Windows::Forms::OpenFileDialog());
@@ -407,7 +397,7 @@ namespace GS_DataBaseUpdate {
 			this->toolStripDropDownButton1 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
 			this->tsmiExit = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripDropDownButton2 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
-			this->Ô‡‡ÏÂÚ˚ToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->tsmiOptions = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->ÓœÓ„‡ÏÏÂToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->Ó·ÌÓ‚ÎÂÌËÂToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->tsbRun = (gcnew System::Windows::Forms::ToolStripButton());
@@ -480,7 +470,7 @@ namespace GS_DataBaseUpdate {
 			// 
 			this->toolStripDropDownButton2->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->toolStripDropDownButton2->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
-				this->Ô‡‡ÏÂÚ˚ToolStripMenuItem,
+				this->tsmiOptions,
 					this->ÓœÓ„‡ÏÏÂToolStripMenuItem, this->Ó·ÌÓ‚ÎÂÌËÂToolStripMenuItem
 			});
 			this->toolStripDropDownButton2->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripDropDownButton2.Image")));
@@ -489,22 +479,23 @@ namespace GS_DataBaseUpdate {
 			this->toolStripDropDownButton2->Size = System::Drawing::Size(60, 22);
 			this->toolStripDropDownButton2->Text = L"—Â‚ËÒ";
 			// 
-			// Ô‡‡ÏÂÚ˚ToolStripMenuItem
+			// tsmiOptions
 			// 
-			this->Ô‡‡ÏÂÚ˚ToolStripMenuItem->Name = L"Ô‡‡ÏÂÚ˚ToolStripMenuItem";
-			this->Ô‡‡ÏÂÚ˚ToolStripMenuItem->Size = System::Drawing::Size(149, 22);
-			this->Ô‡‡ÏÂÚ˚ToolStripMenuItem->Text = L"œ‡‡ÏÂÚ˚";
+			this->tsmiOptions->Name = L"tsmiOptions";
+			this->tsmiOptions->Size = System::Drawing::Size(152, 22);
+			this->tsmiOptions->Text = L"œ‡‡ÏÂÚ˚";
+			this->tsmiOptions->Click += gcnew System::EventHandler(this, &frmMain::tsmiOptions_Click);
 			// 
 			// ÓœÓ„‡ÏÏÂToolStripMenuItem
 			// 
 			this->ÓœÓ„‡ÏÏÂToolStripMenuItem->Name = L"ÓœÓ„‡ÏÏÂToolStripMenuItem";
-			this->ÓœÓ„‡ÏÏÂToolStripMenuItem->Size = System::Drawing::Size(149, 22);
+			this->ÓœÓ„‡ÏÏÂToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->ÓœÓ„‡ÏÏÂToolStripMenuItem->Text = L"Œ ÔÓ„‡ÏÏÂ";
 			// 
 			// Ó·ÌÓ‚ÎÂÌËÂToolStripMenuItem
 			// 
 			this->Ó·ÌÓ‚ÎÂÌËÂToolStripMenuItem->Name = L"Ó·ÌÓ‚ÎÂÌËÂToolStripMenuItem";
-			this->Ó·ÌÓ‚ÎÂÌËÂToolStripMenuItem->Size = System::Drawing::Size(149, 22);
+			this->Ó·ÌÓ‚ÎÂÌËÂToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->Ó·ÌÓ‚ÎÂÌËÂToolStripMenuItem->Text = L"Œ·ÌÓ‚ÎÂÌËÂ";
 			// 
 			// tsbRun
@@ -586,16 +577,16 @@ namespace GS_DataBaseUpdate {
 			// 
 			// dgvNameSpace
 			// 
-			dataGridViewCellStyle1->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle5->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle5->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			dataGridViewCellStyle1->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle1->Padding = System::Windows::Forms::Padding(0, 3, 0, 3);
-			dataGridViewCellStyle1->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle1->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dgvNameSpace->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle5->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle5->Padding = System::Windows::Forms::Padding(0, 3, 0, 3);
+			dataGridViewCellStyle5->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle5->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle5->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dgvNameSpace->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
 			this->dgvNameSpace->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
 			this->dgvNameSpace->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(3) {
 				this->Number,
@@ -633,16 +624,16 @@ namespace GS_DataBaseUpdate {
 			// 
 			// dgvDBPath
 			// 
-			dataGridViewCellStyle2->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle2->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle6->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			dataGridViewCellStyle2->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle2->Padding = System::Windows::Forms::Padding(0, 3, 0, 3);
-			dataGridViewCellStyle2->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle2->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle2->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dgvDBPath->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+			dataGridViewCellStyle6->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle6->Padding = System::Windows::Forms::Padding(0, 3, 0, 3);
+			dataGridViewCellStyle6->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle6->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle6->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dgvDBPath->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
 			this->dgvDBPath->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
 			this->dgvDBPath->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(2) { this->Column1, this->Column2 });
 			this->dgvDBPath->EnableHeadersVisualStyles = false;
@@ -699,29 +690,29 @@ namespace GS_DataBaseUpdate {
 			this->dgvEventLog->AutoSizeRowsMode = System::Windows::Forms::DataGridViewAutoSizeRowsMode::AllCells;
 			this->dgvEventLog->BackgroundColor = System::Drawing::SystemColors::Window;
 			this->dgvEventLog->CellBorderStyle = System::Windows::Forms::DataGridViewCellBorderStyle::None;
-			dataGridViewCellStyle3->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleCenter;
-			dataGridViewCellStyle3->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle7->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleCenter;
+			dataGridViewCellStyle7->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			dataGridViewCellStyle3->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle3->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle3->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle3->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dgvEventLog->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+			dataGridViewCellStyle7->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle7->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle7->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle7->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dgvEventLog->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
 			this->dgvEventLog->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
 			this->dgvEventLog->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(4) {
 				this->Description,
 					this->isError, this->Time, this->Date
 			});
-			dataGridViewCellStyle4->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle4->BackColor = System::Drawing::SystemColors::Window;
-			dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle8->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle8->BackColor = System::Drawing::SystemColors::Window;
+			dataGridViewCellStyle8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			dataGridViewCellStyle4->ForeColor = System::Drawing::SystemColors::ControlText;
-			dataGridViewCellStyle4->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle4->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle4->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dgvEventLog->DefaultCellStyle = dataGridViewCellStyle4;
+			dataGridViewCellStyle8->ForeColor = System::Drawing::SystemColors::ControlText;
+			dataGridViewCellStyle8->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle8->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle8->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dgvEventLog->DefaultCellStyle = dataGridViewCellStyle8;
 			this->dgvEventLog->Location = System::Drawing::Point(6, 19);
 			this->dgvEventLog->MultiSelect = false;
 			this->dgvEventLog->Name = L"dgvEventLog";
@@ -803,14 +794,28 @@ namespace GS_DataBaseUpdate {
 #pragma endregion
 
 
-	private: TString AddStrings(TString &str1, TString &str2) {
+	public: TString AddStrings(TString &str1, TString &str2) {
 		TString tmp;
 		tmp.append(str1);
 		tmp.append(str2);
 
 		return tmp;
 	}
-	private: TString AddStrings(TString &str1, TString &str2, TString &str3) {
+	public: TString AddStrings(const TCHAR* str1, TString &str2) {
+		TString tmp;
+		tmp.append(TString(str1));
+		tmp.append(str2);
+
+		return tmp;
+	}
+	public: TString AddStrings(TString &str1, const TCHAR* str2) {
+		TString tmp;
+		tmp.append(str1);
+		tmp.append(TString(str2));
+
+		return tmp;
+	}
+	public: TString AddStrings(TString &str1, TString &str2, TString &str3) {
 		TString tmp;
 		tmp.append(str1);
 		tmp.append(str2);
@@ -819,6 +824,8 @@ namespace GS_DataBaseUpdate {
 		return tmp;
 	}
 	private: System::Void AddToEventLog(TString str, BOOL isError, BOOL withMsgBox) {
+
+		if (str == TString()) return void();
 
 		char bufTime[80], bufDate[80];
 		time_t t = time(0);
@@ -857,6 +864,8 @@ namespace GS_DataBaseUpdate {
 		ofdDBPath->FileName = "";
 		ofdDBPath->InitialDirectory = gcnew String(sLastDBPath.c_str());
 
+		AddToEventLog(L"¬˚·Ó ·‡Á˚ ‰‡ÌÌ˚ı.", false, false);
+
 		if (ofdDBPath->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
 
 			TString tmp = msclr::interop::marshal_as<TString>((String^)ofdDBPath->FileName);
@@ -870,7 +879,13 @@ namespace GS_DataBaseUpdate {
 				sLastDBPath.c_str(),
 				AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
 
-			dgvDBPath->Rows->Add(dgvDBPath->Rows->Count, ofdDBPath->FileName);			
+			if (res == 0) {
+				AddToEventLog(GetLastErrorDescription(), true, false);
+			}
+
+			dgvDBPath->Rows->Add(dgvDBPath->Rows->Count, ofdDBPath->FileName);
+
+			AddToEventLog(GetLastErrorDescription(), true, false);
 		}
 	}
 	private: System::Void btnDBPathDelete_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -885,6 +900,8 @@ namespace GS_DataBaseUpdate {
 
 		dgvDBPath->Rows->RemoveAt(dgvDBPath->CurrentCell->RowIndex);
 
+		AddToEventLog(GetLastErrorDescription(), true, false);
+
 		/*Delete all rows*/
 		//while (iRecCount > 1) dgvDBPath->Rows->RemoveAt(0);
 	}
@@ -894,6 +911,8 @@ namespace GS_DataBaseUpdate {
 		ofdNameSpace->FileName = "";
 		ofdNameSpace->Multiselect = true;
 		ofdNameSpace->InitialDirectory = gcnew String(sLastNSPath.c_str());
+
+		AddToEventLog(L"¬˚·Ó Ù‡ÈÎÓ‚ œ».", false, false);
 
 		if (ofdNameSpace->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
 
@@ -908,10 +927,16 @@ namespace GS_DataBaseUpdate {
 				sLastNSPath.c_str(),
 				AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
 
+			if (res == 0) {
+				AddToEventLog(GetLastErrorDescription(), true, false);
+			}
+
 			int iFileCount = ofdNameSpace->SafeFileNames->Length;
 
 			for (int i = 0; i < iFileCount; i++) {
 				dgvNameSpace->Rows->Add(dgvNameSpace->Rows->Count, ofdNameSpace->SafeFileNames[i], ofdNameSpace->FileNames[i]);
+
+				AddToEventLog(GetLastErrorDescription(), true, false);
 			}
 		}
 	}
@@ -926,6 +951,8 @@ namespace GS_DataBaseUpdate {
 		if ((iCurRow + 1) == iRecCount) return void();
 
 		dgvNameSpace->Rows->RemoveAt(dgvNameSpace->CurrentCell->RowIndex);
+
+		AddToEventLog(GetLastErrorDescription(), true, false);
 	}
 	private: System::Void frmMain_Shown(System::Object^  sender, System::EventArgs^  e) {
 
@@ -946,6 +973,8 @@ namespace GS_DataBaseUpdate {
 			AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
 		if (result > 0)
 			sLastDBPath = TString(buffer);
+		else
+			AddToEventLog(AddStrings(L"Œ¯Ë·Í‡ ˜ÚÂÌËˇ Settings.ini", GetLastErrorDescription()), true, false);
 
 		result = GetPrivateProfileString(
 			TEXT("PathSection"),
@@ -956,13 +985,32 @@ namespace GS_DataBaseUpdate {
 			AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
 		if (result > 0)
 			sLastNSPath = TString(buffer);
+		else
+			AddToEventLog(AddStrings(L"Œ¯Ë·Í‡ ˜ÚÂÌËˇ Settings.ini", GetLastErrorDescription()), true, false);
 
-		Application::DoEvents();
-		//SearchOnAllDrives(L"gedemin.exe");
+		result = GetPrivateProfileString(
+			TEXT("Options"),
+			searchGedeminAfterOpen.c_str(),
+			NULL,
+			buffer,
+			MAX_PATH,
+			AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
+		if (result > 0)
+			SearchGedeminAfterOpen = (wcscmp(buffer, L"1") == 0 ? TRUE : FALSE);
+		else
+			AddToEventLog(AddStrings(L"Œ¯Ë·Í‡ ˜ÚÂÌËˇ Settings.ini", GetLastErrorDescription()), true, false);
+
+		if (SearchGedeminAfterOpen) {
+			Application::DoEvents();
+			SearchOnAllDrives(L"gedemin.exe");
+			AddToEventLog(L"", true, false);
+		}
 
 		if (sGedeminPath != TString()) {
 			tbGedeminPath->Text = gcnew String(sGedeminPath.c_str());
 			tbGedeminPath->BackColor = Color::PaleGreen;
+
+			AddToEventLog(AddStrings(L"œÛÚ¸ Í gedemin.exe", sGedeminPath), false, false);
 		}
 		else {
 			tbGedeminPath->Text = "ÕÂ Ì‡È‰ÂÌ";
@@ -971,56 +1019,49 @@ namespace GS_DataBaseUpdate {
 	}
 	private: System::Void tsbRun_Click(System::Object^  sender, System::EventArgs^  e) {
 
-		AddToEventLog(L"asfafsfasfqwertyuiasdfghjzxcvbnm123456789", false, false);
-
-		return;
 		int iCountDB = dgvDBPath->Rows->Count;
 		if (iCountDB <= 1) {
-			/*¬˚·ÂËÚÂ Ù‡ÈÎ˚ ¡ƒ*/
-			
-			//AddToEventLog(L"lksdgflkjsd", 1, 1);
+			AddToEventLog(L"ÕÂ ÛÍ‡Á‡Ì˚ Ù‡ÈÎ˚ ¡ƒ!", false, true);
 			return void();
 		}
 
 		int iCountNS = dgvNameSpace->Rows->Count;
 		if (iCountNS <= 1) {
-			/*¬˚·ÂËÚÂ Ù‡ÈÎ˚ œ»*/
-			//return void();
+			AddToEventLog(L"ÕÂ ÛÍ‡Á‡Ì˚ Ù‡ÈÎ˚ œ»!", false, true);
+			return void();
 		}
 
 		int THREAD_COUNT = iCountDB - 1;
-		// ÒÓÁ‰‡ÌËÂ Ï‡ÒÒË‚‡ ÔÛÒÚ˚ı ÛÍ‡Á‡ÚÂÎÂÈ Ì‡ ÔÓÚÓÍË, ÍÓÚÓ˚Â ÒÓÁ‰‡‰ËÏ ‰‡Î¸¯Â
+		/*ÒÓÁ‰‡ÌËÂ Ï‡ÒÒË‚‡ ÔÛÒÚ˚ı ÛÍ‡Á‡ÚÂÎÂÈ Ì‡ ÔÓÚÓÍË, ÍÓÚÓ˚Â ÒÓÁ‰‡‰ËÏ ‰‡Î¸¯Â*/
 		HANDLE* Thread_Arr = new HANDLE[THREAD_COUNT];
 
 		/*Path to NameSpace directory*/
 		TString sNSDirPath = AddStrings(sCurrentDir, TString(L"\\GS_APP"));
 
 		if (DirectoryExists((sNSDirPath))) {
+			AddToEventLog(AddStrings(L"”‰‡ÎÂÌËÂ ", sNSDirPath), false, false);
 			if (DeleteDirectory(sNSDirPath)) {
+				AddToEventLog(L"”‰‡ÎÂÌËÂ ÛÒÔÂ¯ÌÓ Á‡‚Â¯ÂÌÓ.", false, false);
 			}
 			else {
-
-				TString m = GetLastErrorDescription();
+				AddToEventLog(GetLastErrorDescription(), true, false);
 				return void();
 			}
 		}
 
-
-		int k = 0;
+		AddToEventLog(AddStrings(L"—ÓÁ‰‡ÌËÂ ", sNSDirPath), false, false);
 		if (CreateDirectory(sNSDirPath.c_str(), NULL)) {
-			k = 4;
+			AddToEventLog(L"—ÓÁ‰‡ÌËÂ ÛÒÔÂ¯ÌÓ Á‡‚Â¯ÂÌÓ.", false, false);
 		}
 		else {
-			k = 5;
+			AddToEventLog(GetLastErrorDescription(), true, false);
 		};
 
 
 		/*Create YAML file****************************************/
+		AddToEventLog(L"—Ó‰‡ÌËÂ Ô‡ÍÂÚ‡ œ».", false, false);
 
 		TString sNSFileName = AddStrings(sNSDirPath, TString(L"\\GS.Temp.yml"));
-		//sNSFileName.append(sNSDirPath);
-		//sNSFileName.append(L"\\GS.Temp.yml");
-
 		stringstream MS;
 
 		MS << "Uses: " << endl;
@@ -1028,27 +1069,21 @@ namespace GS_DataBaseUpdate {
 		const char* ptr;
 		TString sFileName, sFullFilePath;
 		string sTmp;
+
 		for (int i = 0; i < iCountNS - 1; i++) {
 
 			TString sFileName = msclr::interop::marshal_as<TString>((String^)dgvNameSpace->Rows[i]->Cells[1]->Value);
 			TString sFullFilePath = msclr::interop::marshal_as<TString>((String^)dgvNameSpace->Rows[i]->Cells[2]->Value);
 
 			if (!copyFile(sFullFilePath.c_str(), AddStrings(AddStrings(sNSDirPath, TString(L"\\")), sFileName).c_str())) {
-				//GetLastErrorDescription()
-				//return void();
+				AddToEventLog(GetLastErrorDescription(), true, false);
+				return void();
 			}
-
 
 			ptr = (const char*)(Marshal::StringToHGlobalAnsi((String^)dgvNameSpace->Rows[i]->Cells[1]->Value)).ToPointer();
 			string sTmp = string(ptr);
 
 			MS << "  - \"" + GetRUIDNSFile(sFullFilePath) + " " + sTmp + "\"" << endl;
-
-
-			TString err = GetLastErrorDescription();
-			if (err != TString()) {
-				int g = 2;
-			}
 		}
 
 		ofstream NSFile(sNSFileName.c_str(), ios::out | ios::binary);
@@ -1067,15 +1102,15 @@ namespace GS_DataBaseUpdate {
 		NSFile << "  MD5: " + GetMD5(MS) << endl;
 		NSFile << MS.str();
 
-		//GetLastErrorDescription();
-
 		NSFile.close();
+
+		AddToEventLog(GetLastErrorDescription(), true, false);
 		/*********************************************************/
 
 		ForThread *SendPr;
 		TString s;
 
-		for (int i = 0; i < iCountDB - 1; i++) {
+		for (int i = 0; i < THREAD_COUNT; i++) {
 			SendPr = new ForThread;
 
 			s = AddStrings(quote, msclr::interop::marshal_as<TString>((String^)dgvDBPath->Rows[i]->Cells[1]->Value), quote);
@@ -1095,6 +1130,16 @@ namespace GS_DataBaseUpdate {
 			SendPr->str = out.str();
 
 			Thread_Arr[i] = CreateThread(0, 0, MyThread, SendPr, 0, 0);
+
+			if (Thread_Arr[i] == NULL) {
+				AddToEventLog(GetLastErrorDescription(), true, false);
+			}
+		}
+
+		WaitForMultipleObjects(THREAD_COUNT, Thread_Arr, TRUE, INFINITE);
+
+		for (int i = 0; i < iCountDB - 1; i++) {
+			CloseHandle(Thread_Arr[i]);
 		}
 	}
 	private: System::Void btnChooseEXE_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -1109,8 +1154,6 @@ namespace GS_DataBaseUpdate {
 
 			tbGedeminPath->Text = gcnew String(sGedeminPath.c_str());
 			tbGedeminPath->BackColor = Color::PaleGreen;
-
-
 		}
 	}
 	private: System::Void tsmiExit_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -1133,12 +1176,33 @@ namespace GS_DataBaseUpdate {
 		}
 	}
 	private: System::Void dgvEventLog_RowsAdded(System::Object^  sender, System::Windows::Forms::DataGridViewRowsAddedEventArgs^  e) {
-				
+
 		dgvEventLog->Rows[e->RowIndex]->DefaultCellStyle->ForeColor = Color::Blue;
 
 		if (Convert::ToInt16(dgvEventLog->Rows[e->RowIndex]->Cells[1]->Value->ToString()) == 1)
 			dgvEventLog->Rows[e->RowIndex]->DefaultCellStyle->ForeColor = Color::Red;
 
 	}
-};
+	private: System::Void tsmiOptions_Click(System::Object^  sender, System::EventArgs^  e) {
+
+		frmOptions^ frmOpt = gcnew frmOptions();
+		
+		if (frmOpt->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+
+			SearchGedeminAfterOpen = frmOpt->cbSearchGedemin->Checked;
+
+			DWORD res;
+			res = WritePrivateProfileString(
+				TEXT("Options"),
+				searchGedeminAfterOpen.c_str(),
+				((SearchGedeminAfterOpen ? TString(L"1") : TString(L"0"))).c_str(),
+				AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
+
+			if (res == 0) {
+				AddToEventLog(GetLastErrorDescription(), true, false);
+			}
+
+		}		
+	}
+	};
 }
