@@ -21,6 +21,9 @@
     <ClCompile Include="frmOptions.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="frmAboutProgram.cpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="frmMain.h">
@@ -30,6 +33,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="AddStrings.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="frmAboutProgram.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

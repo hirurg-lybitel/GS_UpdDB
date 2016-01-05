@@ -1,6 +1,9 @@
-﻿  frmMain.cpp
-e:\users\юрий\documents\visual studio 2015\projects\gs_databaseupdate\gs_databaseupdate\frmMain.h(179): warning C4244: аргумент: преобразование "std::streamoff" в "DWORD", возможна потеря данных
-e:\users\юрий\documents\visual studio 2015\projects\gs_databaseupdate\gs_databaseupdate\frmMain.h(180): warning C4018: <: несоответствие типов со знаком и без знака
-e:\users\юрий\documents\visual studio 2015\projects\gs_databaseupdate\gs_databaseupdate\frmMain.h(832): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+﻿  frmAboutProgram.cpp
+  frmMain.cpp
+e:\users\юрий\documents\visual studio 2015\projects\gs_databaseupdate\gs_databaseupdate\frmMain.h(182): warning C4244: аргумент: преобразование "std::streamoff" в "DWORD", возможна потеря данных
+e:\users\юрий\documents\visual studio 2015\projects\gs_databaseupdate\gs_databaseupdate\frmMain.h(183): warning C4018: <: несоответствие типов со знаком и без знака
+e:\users\юрий\documents\visual studio 2015\projects\gs_databaseupdate\gs_databaseupdate\frmMain.h(837): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   E:\Program Files\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note:  см. объявление "localtime"
+  frmOptions.cpp
+  Создание кода...
   GS_DataBaseUpdate.vcxproj -> E:\Users\Юрий\Documents\Visual Studio 2015\Projects\GS_DataBaseUpdate\Debug\GS_DataBaseUpdate.exe

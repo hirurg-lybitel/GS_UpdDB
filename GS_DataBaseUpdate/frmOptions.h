@@ -266,12 +266,15 @@ namespace GS_DataBaseUpdate {
 			this->Controls->Add(this->btnCancel);
 			this->Controls->Add(this->btnOk);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
+			this->HelpButton = true;
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
 			this->Name = L"frmOptions";
 			this->ShowIcon = false;
-			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
+			this->ShowInTaskbar = false;
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"Параметры";
+			this->TopMost = true;
 			this->Shown += gcnew System::EventHandler(this, &frmOptions::frmOptions_Shown);
 			this->gbPath->ResumeLayout(false);
 			this->gbPath->PerformLayout();

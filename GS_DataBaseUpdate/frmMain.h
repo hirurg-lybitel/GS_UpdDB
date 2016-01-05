@@ -17,7 +17,10 @@
 #include <Psapi.h>
 #pragma comment(lib,"psapi.lib")
 
+/*Дополнительные диалоговые формы*/
 #include "frmOptions.h"
+#include "frmAboutProgram.h"
+/*********************************/
 //#include "AddStrings.h"
 
 using namespace std;
@@ -348,8 +351,9 @@ namespace GS_DataBaseUpdate {
 	private: System::Windows::Forms::ToolStripMenuItem^  tsmiExit;
 	private: System::Windows::Forms::ToolStripDropDownButton^  toolStripDropDownButton2;
 	private: System::Windows::Forms::ToolStripMenuItem^  tsmiOptions;
+	private: System::Windows::Forms::ToolStripMenuItem^  tsmiAbout;
 
-	private: System::Windows::Forms::ToolStripMenuItem^  оПрограммеToolStripMenuItem;
+
 	private: System::Windows::Forms::ToolStripMenuItem^  обновлениеToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripButton^  tsbRun;
 	private: System::Windows::Forms::GroupBox^  gbMain;
@@ -386,10 +390,10 @@ namespace GS_DataBaseUpdate {
 		/// </summary>
 		void InitializeComponent(void) {
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(frmMain::typeid));
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle5 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle6 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle7 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle8 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle3 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle4 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			this->ofdDBPath = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->ofdNameSpace = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->ofdGedeminPath = (gcnew System::Windows::Forms::OpenFileDialog());
@@ -398,7 +402,7 @@ namespace GS_DataBaseUpdate {
 			this->tsmiExit = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripDropDownButton2 = (gcnew System::Windows::Forms::ToolStripDropDownButton());
 			this->tsmiOptions = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->оПрограммеToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->tsmiAbout = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->обновлениеToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->tsbRun = (gcnew System::Windows::Forms::ToolStripButton());
 			this->gbMain = (gcnew System::Windows::Forms::GroupBox());
@@ -471,7 +475,7 @@ namespace GS_DataBaseUpdate {
 			this->toolStripDropDownButton2->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->toolStripDropDownButton2->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
 				this->tsmiOptions,
-					this->оПрограммеToolStripMenuItem, this->обновлениеToolStripMenuItem
+					this->tsmiAbout, this->обновлениеToolStripMenuItem
 			});
 			this->toolStripDropDownButton2->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripDropDownButton2.Image")));
 			this->toolStripDropDownButton2->ImageTransparentColor = System::Drawing::Color::Magenta;
@@ -486,11 +490,12 @@ namespace GS_DataBaseUpdate {
 			this->tsmiOptions->Text = L"Параметры";
 			this->tsmiOptions->Click += gcnew System::EventHandler(this, &frmMain::tsmiOptions_Click);
 			// 
-			// оПрограммеToolStripMenuItem
+			// tsmiAbout
 			// 
-			this->оПрограммеToolStripMenuItem->Name = L"оПрограммеToolStripMenuItem";
-			this->оПрограммеToolStripMenuItem->Size = System::Drawing::Size(152, 22);
-			this->оПрограммеToolStripMenuItem->Text = L"О программе";
+			this->tsmiAbout->Name = L"tsmiAbout";
+			this->tsmiAbout->Size = System::Drawing::Size(152, 22);
+			this->tsmiAbout->Text = L"О программе";
+			this->tsmiAbout->Click += gcnew System::EventHandler(this, &frmMain::tsmiAbout_Click);
 			// 
 			// обновлениеToolStripMenuItem
 			// 
@@ -577,16 +582,16 @@ namespace GS_DataBaseUpdate {
 			// 
 			// dgvNameSpace
 			// 
-			dataGridViewCellStyle5->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle5->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle1->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			dataGridViewCellStyle5->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle5->Padding = System::Windows::Forms::Padding(0, 3, 0, 3);
-			dataGridViewCellStyle5->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle5->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle5->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dgvNameSpace->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+			dataGridViewCellStyle1->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle1->Padding = System::Windows::Forms::Padding(0, 3, 0, 3);
+			dataGridViewCellStyle1->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle1->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dgvNameSpace->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
 			this->dgvNameSpace->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
 			this->dgvNameSpace->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(3) {
 				this->Number,
@@ -624,16 +629,16 @@ namespace GS_DataBaseUpdate {
 			// 
 			// dgvDBPath
 			// 
-			dataGridViewCellStyle6->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle2->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle2->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			dataGridViewCellStyle6->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle6->Padding = System::Windows::Forms::Padding(0, 3, 0, 3);
-			dataGridViewCellStyle6->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle6->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle6->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dgvDBPath->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
+			dataGridViewCellStyle2->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle2->Padding = System::Windows::Forms::Padding(0, 3, 0, 3);
+			dataGridViewCellStyle2->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle2->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle2->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dgvDBPath->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
 			this->dgvDBPath->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
 			this->dgvDBPath->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(2) { this->Column1, this->Column2 });
 			this->dgvDBPath->EnableHeadersVisualStyles = false;
@@ -690,29 +695,29 @@ namespace GS_DataBaseUpdate {
 			this->dgvEventLog->AutoSizeRowsMode = System::Windows::Forms::DataGridViewAutoSizeRowsMode::AllCells;
 			this->dgvEventLog->BackgroundColor = System::Drawing::SystemColors::Window;
 			this->dgvEventLog->CellBorderStyle = System::Windows::Forms::DataGridViewCellBorderStyle::None;
-			dataGridViewCellStyle7->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleCenter;
-			dataGridViewCellStyle7->BackColor = System::Drawing::SystemColors::Control;
-			dataGridViewCellStyle7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle3->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleCenter;
+			dataGridViewCellStyle3->BackColor = System::Drawing::SystemColors::Control;
+			dataGridViewCellStyle3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			dataGridViewCellStyle7->ForeColor = System::Drawing::SystemColors::WindowText;
-			dataGridViewCellStyle7->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle7->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle7->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dgvEventLog->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+			dataGridViewCellStyle3->ForeColor = System::Drawing::SystemColors::WindowText;
+			dataGridViewCellStyle3->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle3->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle3->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dgvEventLog->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
 			this->dgvEventLog->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
 			this->dgvEventLog->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(4) {
 				this->Description,
 					this->isError, this->Time, this->Date
 			});
-			dataGridViewCellStyle8->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-			dataGridViewCellStyle8->BackColor = System::Drawing::SystemColors::Window;
-			dataGridViewCellStyle8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			dataGridViewCellStyle4->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+			dataGridViewCellStyle4->BackColor = System::Drawing::SystemColors::Window;
+			dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			dataGridViewCellStyle8->ForeColor = System::Drawing::SystemColors::ControlText;
-			dataGridViewCellStyle8->SelectionBackColor = System::Drawing::SystemColors::Highlight;
-			dataGridViewCellStyle8->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-			dataGridViewCellStyle8->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
-			this->dgvEventLog->DefaultCellStyle = dataGridViewCellStyle8;
+			dataGridViewCellStyle4->ForeColor = System::Drawing::SystemColors::ControlText;
+			dataGridViewCellStyle4->SelectionBackColor = System::Drawing::SystemColors::Highlight;
+			dataGridViewCellStyle4->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+			dataGridViewCellStyle4->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
+			this->dgvEventLog->DefaultCellStyle = dataGridViewCellStyle4;
 			this->dgvEventLog->Location = System::Drawing::Point(6, 19);
 			this->dgvEventLog->MultiSelect = false;
 			this->dgvEventLog->Name = L"dgvEventLog";
@@ -1021,13 +1026,13 @@ namespace GS_DataBaseUpdate {
 
 		int iCountDB = dgvDBPath->Rows->Count;
 		if (iCountDB <= 1) {
-			AddToEventLog(L"Не указаны файлы БД!", false, true);
+			AddToEventLog(L"Не указаны файлы БД!", true, true);
 			return void();
 		}
 
 		int iCountNS = dgvNameSpace->Rows->Count;
 		if (iCountNS <= 1) {
-			AddToEventLog(L"Не указаны файлы ПИ!", false, true);
+			AddToEventLog(L"Не указаны файлы ПИ!", true, true);
 			return void();
 		}
 
@@ -1204,5 +1209,9 @@ namespace GS_DataBaseUpdate {
 
 		}		
 	}
-	};
+	private: System::Void tsmiAbout_Click(System::Object^  sender, System::EventArgs^  e) {
+		frmAboutProgram^ frmAbout = gcnew frmAboutProgram();
+		frmAbout->ShowDialog();
+	}
+};
 }
