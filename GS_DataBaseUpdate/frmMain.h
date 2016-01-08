@@ -377,11 +377,14 @@ namespace GS_DataBaseUpdate {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  isError;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Time;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Date;
+	private: System::Windows::Forms::ContextMenuStrip^  cmsLog;
+	private: System::Windows::Forms::ToolStripMenuItem^  tsmiClear;
+	private: System::ComponentModel::IContainer^  components;
 
 	protected:
 
 	private:
-		System::ComponentModel::Container ^components;
+
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -389,6 +392,7 @@ namespace GS_DataBaseUpdate {
 		/// содержимое этого метода с помощью редактора кода.
 		/// </summary>
 		void InitializeComponent(void) {
+			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(frmMain::typeid));
 			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			System::Windows::Forms::DataGridViewCellStyle^  dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
@@ -426,12 +430,15 @@ namespace GS_DataBaseUpdate {
 			this->Time = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->Date = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->statusStrip2 = (gcnew System::Windows::Forms::StatusStrip());
+			this->cmsLog = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->tsmiClear = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStrip1->SuspendLayout();
 			this->gbMain->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvNameSpace))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvDBPath))->BeginInit();
 			this->gbStatus->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvEventLog))->BeginInit();
+			this->cmsLog->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// ofdGedeminPath
@@ -486,21 +493,21 @@ namespace GS_DataBaseUpdate {
 			// tsmiOptions
 			// 
 			this->tsmiOptions->Name = L"tsmiOptions";
-			this->tsmiOptions->Size = System::Drawing::Size(152, 22);
+			this->tsmiOptions->Size = System::Drawing::Size(149, 22);
 			this->tsmiOptions->Text = L"Параметры";
 			this->tsmiOptions->Click += gcnew System::EventHandler(this, &frmMain::tsmiOptions_Click);
 			// 
 			// tsmiAbout
 			// 
 			this->tsmiAbout->Name = L"tsmiAbout";
-			this->tsmiAbout->Size = System::Drawing::Size(152, 22);
+			this->tsmiAbout->Size = System::Drawing::Size(149, 22);
 			this->tsmiAbout->Text = L"О программе";
 			this->tsmiAbout->Click += gcnew System::EventHandler(this, &frmMain::tsmiAbout_Click);
 			// 
 			// обновлениеToolStripMenuItem
 			// 
 			this->обновлениеToolStripMenuItem->Name = L"обновлениеToolStripMenuItem";
-			this->обновлениеToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->обновлениеToolStripMenuItem->Size = System::Drawing::Size(149, 22);
 			this->обновлениеToolStripMenuItem->Text = L"Обновление";
 			// 
 			// tsbRun
@@ -709,6 +716,7 @@ namespace GS_DataBaseUpdate {
 				this->Description,
 					this->isError, this->Time, this->Date
 			});
+			this->dgvEventLog->ContextMenuStrip = this->cmsLog;
 			dataGridViewCellStyle4->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
 			dataGridViewCellStyle4->BackColor = System::Drawing::SystemColors::Window;
 			dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
@@ -767,6 +775,19 @@ namespace GS_DataBaseUpdate {
 			this->statusStrip2->TabIndex = 20;
 			this->statusStrip2->Text = L"statusStrip2";
 			// 
+			// cmsLog
+			// 
+			this->cmsLog->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->tsmiClear });
+			this->cmsLog->Name = L"cmsLog";
+			this->cmsLog->Size = System::Drawing::Size(127, 26);
+			// 
+			// tsmiClear
+			// 
+			this->tsmiClear->Name = L"tsmiClear";
+			this->tsmiClear->Size = System::Drawing::Size(126, 22);
+			this->tsmiClear->Text = L"Очистить";
+			this->tsmiClear->Click += gcnew System::EventHandler(this, &frmMain::tsmiClear_Click);
+			// 
 			// frmMain
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -792,6 +813,7 @@ namespace GS_DataBaseUpdate {
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvDBPath))->EndInit();
 			this->gbStatus->ResumeLayout(false);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvEventLog))->EndInit();
+			this->cmsLog->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -1213,5 +1235,8 @@ namespace GS_DataBaseUpdate {
 		frmAboutProgram^ frmAbout = gcnew frmAboutProgram();
 		frmAbout->ShowDialog();
 	}
+private: System::Void tsmiClear_Click(System::Object^  sender, System::EventArgs^  e) {
+	dgvEventLog->Rows->Clear();
+}
 };
 }
