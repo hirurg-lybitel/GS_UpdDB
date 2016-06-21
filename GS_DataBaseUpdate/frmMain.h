@@ -38,10 +38,13 @@ TString sGedeminPath = TString();
 TString sCurrentDir = TString();;
 TString sLastDBPath = TString();
 TString sLastNSPath = TString();
+TString sNSPath = TString();
 BOOL SearchGedeminAfterOpen = TRUE;
+
 TString searchDBPath = L"LastDBPath";
 TString searchNSPath = L"LastNSPath";
 TString searchGedeminAfterOpen = L"SearchGedeminAfterOpen";
+TString searchGedeminPath = L"GedeminPath";
 /************************************/
 
 struct ForThread {
@@ -59,8 +62,8 @@ BOOL CALLBACK EnumWindowsProcMy(HWND hwnd, LPARAM lParam) {
 	return TRUE;
 }
 
-BOOL DirectoryExists(const TString& sNSDirPath) {
-	DWORD fa = GetFileAttributes(sNSDirPath.c_str());
+BOOL DirectoryExists(const TString& dir) {
+	DWORD fa = GetFileAttributes(dir.c_str());
 
 	if (fa == INVALID_FILE_ATTRIBUTES) {
 		return false;
@@ -331,18 +334,18 @@ namespace GS_DataBaseUpdate {
 	using namespace System::Runtime::InteropServices;
 
 	public ref class frmMain : public System::Windows::Forms::Form {
-	public:
-		frmMain(void) {
-			InitializeComponent();
-		}
 
-	protected:
-		~frmMain() {
-			if (components) {
-				delete components;
-			}
-		}
+	public:	BOOL isPackage;
 
+	public: frmMain(void) {
+		InitializeComponent();
+	}
+	protected: ~frmMain() {
+		if (components) {
+			delete components;
+		}
+	}
+		
 	private: System::Windows::Forms::OpenFileDialog^  ofdDBPath;
 	private: System::Windows::Forms::OpenFileDialog^  ofdNameSpace;
 	private: System::Windows::Forms::OpenFileDialog^  ofdGedeminPath;
@@ -352,8 +355,6 @@ namespace GS_DataBaseUpdate {
 	private: System::Windows::Forms::ToolStripDropDownButton^  toolStripDropDownButton2;
 	private: System::Windows::Forms::ToolStripMenuItem^  tsmiOptions;
 	private: System::Windows::Forms::ToolStripMenuItem^  tsmiAbout;
-
-
 	private: System::Windows::Forms::ToolStripMenuItem^  обновлениеToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripButton^  tsbRun;
 	private: System::Windows::Forms::GroupBox^  gbMain;
@@ -379,6 +380,12 @@ namespace GS_DataBaseUpdate {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  Date;
 	private: System::Windows::Forms::ContextMenuStrip^  cmsLog;
 	private: System::Windows::Forms::ToolStripMenuItem^  tsmiClear;
+	private: System::Windows::Forms::Panel^  pnlNS;
+
+	private: System::Windows::Forms::TextBox^  tbNSPath;
+	private: System::Windows::Forms::CheckBox^  cbIsPackage;
+	private: System::Windows::Forms::Button^  btnChooseNSPath;
+	private: System::Windows::Forms::FolderBrowserDialog^  fbdNameSpaceFolder;
 	private: System::ComponentModel::IContainer^  components;
 
 	protected:
@@ -410,6 +417,10 @@ namespace GS_DataBaseUpdate {
 			this->обновлениеToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->tsbRun = (gcnew System::Windows::Forms::ToolStripButton());
 			this->gbMain = (gcnew System::Windows::Forms::GroupBox());
+			this->pnlNS = (gcnew System::Windows::Forms::Panel());
+			this->btnChooseNSPath = (gcnew System::Windows::Forms::Button());
+			this->tbNSPath = (gcnew System::Windows::Forms::TextBox());
+			this->cbIsPackage = (gcnew System::Windows::Forms::CheckBox());
 			this->btnChooseEXE = (gcnew System::Windows::Forms::Button());
 			this->btnNameSpaceDelete = (gcnew System::Windows::Forms::Button());
 			this->btnNameSpaceAdd = (gcnew System::Windows::Forms::Button());
@@ -429,11 +440,13 @@ namespace GS_DataBaseUpdate {
 			this->isError = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->Time = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->Date = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->statusStrip2 = (gcnew System::Windows::Forms::StatusStrip());
 			this->cmsLog = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->tsmiClear = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->statusStrip2 = (gcnew System::Windows::Forms::StatusStrip());
+			this->fbdNameSpaceFolder = (gcnew System::Windows::Forms::FolderBrowserDialog());
 			this->toolStrip1->SuspendLayout();
 			this->gbMain->SuspendLayout();
+			this->pnlNS->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvNameSpace))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvDBPath))->BeginInit();
 			this->gbStatus->SuspendLayout();
@@ -523,6 +536,8 @@ namespace GS_DataBaseUpdate {
 			// 
 			this->gbMain->BackColor = System::Drawing::SystemColors::Control;
 			this->gbMain->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->gbMain->Controls->Add(this->pnlNS);
+			this->gbMain->Controls->Add(this->cbIsPackage);
 			this->gbMain->Controls->Add(this->btnChooseEXE);
 			this->gbMain->Controls->Add(this->btnNameSpaceDelete);
 			this->gbMain->Controls->Add(this->btnNameSpaceAdd);
@@ -533,37 +548,79 @@ namespace GS_DataBaseUpdate {
 			this->gbMain->Controls->Add(this->tbGedeminPath);
 			this->gbMain->Location = System::Drawing::Point(12, 28);
 			this->gbMain->Name = L"gbMain";
-			this->gbMain->Size = System::Drawing::Size(615, 447);
+			this->gbMain->Size = System::Drawing::Size(615, 535);
 			this->gbMain->TabIndex = 18;
 			this->gbMain->TabStop = false;
 			// 
+			// pnlNS
+			// 
+			this->pnlNS->Controls->Add(this->btnChooseNSPath);
+			this->pnlNS->Controls->Add(this->tbNSPath);
+			this->pnlNS->Location = System::Drawing::Point(91, 298);
+			this->pnlNS->Name = L"pnlNS";
+			this->pnlNS->Size = System::Drawing::Size(510, 30);
+			this->pnlNS->TabIndex = 30;
+			this->pnlNS->Visible = false;
+			// 
+			// btnChooseNSPath
+			// 
+			this->btnChooseNSPath->Location = System::Drawing::Point(435, 0);
+			this->btnChooseNSPath->Name = L"btnChooseNSPath";
+			this->btnChooseNSPath->Size = System::Drawing::Size(75, 30);
+			this->btnChooseNSPath->TabIndex = 31;
+			this->btnChooseNSPath->Text = L"Выбрать";
+			this->btnChooseNSPath->UseVisualStyleBackColor = true;
+			this->btnChooseNSPath->Click += gcnew System::EventHandler(this, &frmMain::btnChooseNSPath_Click);
+			// 
+			// tbNSPath
+			// 
+			this->tbNSPath->BackColor = System::Drawing::SystemColors::Window;
+			this->tbNSPath->Cursor = System::Windows::Forms::Cursors::IBeam;
+			this->tbNSPath->Font = (gcnew System::Drawing::Font(L"Times New Roman", 15, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)),
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
+			this->tbNSPath->Location = System::Drawing::Point(0, 0);
+			this->tbNSPath->Name = L"tbNSPath";
+			this->tbNSPath->Size = System::Drawing::Size(429, 30);
+			this->tbNSPath->TabIndex = 30;
+			// 
+			// cbIsPackage
+			// 
+			this->cbIsPackage->AutoSize = true;
+			this->cbIsPackage->Location = System::Drawing::Point(12, 306);
+			this->cbIsPackage->Name = L"cbIsPackage";
+			this->cbIsPackage->Size = System::Drawing::Size(57, 17);
+			this->cbIsPackage->TabIndex = 28;
+			this->cbIsPackage->Text = L"Пакет";
+			this->cbIsPackage->UseVisualStyleBackColor = true;
+			this->cbIsPackage->CheckedChanged += gcnew System::EventHandler(this, &frmMain::cbIsPackage_CheckedChanged);
+			// 
 			// btnChooseEXE
 			// 
-			this->btnChooseEXE->Location = System::Drawing::Point(505, 23);
+			this->btnChooseEXE->Location = System::Drawing::Point(526, 19);
 			this->btnChooseEXE->Name = L"btnChooseEXE";
-			this->btnChooseEXE->Size = System::Drawing::Size(75, 23);
+			this->btnChooseEXE->Size = System::Drawing::Size(75, 30);
 			this->btnChooseEXE->TabIndex = 27;
-			this->btnChooseEXE->Text = L"button1";
+			this->btnChooseEXE->Text = L"Выбрать";
 			this->btnChooseEXE->UseVisualStyleBackColor = true;
 			this->btnChooseEXE->Click += gcnew System::EventHandler(this, &frmMain::btnChooseEXE_Click);
 			// 
 			// btnNameSpaceDelete
 			// 
-			this->btnNameSpaceDelete->Location = System::Drawing::Point(91, 246);
+			this->btnNameSpaceDelete->Location = System::Drawing::Point(91, 334);
 			this->btnNameSpaceDelete->Name = L"btnNameSpaceDelete";
 			this->btnNameSpaceDelete->Size = System::Drawing::Size(73, 30);
 			this->btnNameSpaceDelete->TabIndex = 25;
-			this->btnNameSpaceDelete->Text = L"button5";
+			this->btnNameSpaceDelete->Text = L"Удалить";
 			this->btnNameSpaceDelete->UseVisualStyleBackColor = true;
 			this->btnNameSpaceDelete->Click += gcnew System::EventHandler(this, &frmMain::btnNameSpaceDelete_Click);
 			// 
 			// btnNameSpaceAdd
 			// 
-			this->btnNameSpaceAdd->Location = System::Drawing::Point(12, 246);
+			this->btnNameSpaceAdd->Location = System::Drawing::Point(12, 334);
 			this->btnNameSpaceAdd->Name = L"btnNameSpaceAdd";
 			this->btnNameSpaceAdd->Size = System::Drawing::Size(73, 30);
 			this->btnNameSpaceAdd->TabIndex = 24;
-			this->btnNameSpaceAdd->Text = L"button4";
+			this->btnNameSpaceAdd->Text = L"Добавить";
 			this->btnNameSpaceAdd->UseVisualStyleBackColor = true;
 			this->btnNameSpaceAdd->Click += gcnew System::EventHandler(this, &frmMain::btnNameSpaceAdd_Click);
 			// 
@@ -573,7 +630,7 @@ namespace GS_DataBaseUpdate {
 			this->btnDBPathDelete->Name = L"btnDBPathDelete";
 			this->btnDBPathDelete->Size = System::Drawing::Size(73, 30);
 			this->btnDBPathDelete->TabIndex = 23;
-			this->btnDBPathDelete->Text = L"button3";
+			this->btnDBPathDelete->Text = L"Удалить";
 			this->btnDBPathDelete->UseVisualStyleBackColor = true;
 			this->btnDBPathDelete->Click += gcnew System::EventHandler(this, &frmMain::btnDBPathDelete_Click);
 			// 
@@ -583,7 +640,7 @@ namespace GS_DataBaseUpdate {
 			this->btnDBPathAdd->Name = L"btnDBPathAdd";
 			this->btnDBPathAdd->Size = System::Drawing::Size(73, 30);
 			this->btnDBPathAdd->TabIndex = 22;
-			this->btnDBPathAdd->Text = L"button2";
+			this->btnDBPathAdd->Text = L"Добавить";
 			this->btnDBPathAdd->UseVisualStyleBackColor = true;
 			this->btnDBPathAdd->Click += gcnew System::EventHandler(this, &frmMain::btnDBPathAdd_Click);
 			// 
@@ -605,7 +662,7 @@ namespace GS_DataBaseUpdate {
 					this->NameNS, this->NameSpacePath
 			});
 			this->dgvNameSpace->EnableHeadersVisualStyles = false;
-			this->dgvNameSpace->Location = System::Drawing::Point(12, 282);
+			this->dgvNameSpace->Location = System::Drawing::Point(12, 370);
 			this->dgvNameSpace->Name = L"dgvNameSpace";
 			this->dgvNameSpace->RowHeadersVisible = false;
 			this->dgvNameSpace->SelectionMode = System::Windows::Forms::DataGridViewSelectionMode::FullRowSelect;
@@ -679,7 +736,7 @@ namespace GS_DataBaseUpdate {
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
 			this->tbGedeminPath->Location = System::Drawing::Point(12, 19);
 			this->tbGedeminPath->Name = L"tbGedeminPath";
-			this->tbGedeminPath->Size = System::Drawing::Size(487, 30);
+			this->tbGedeminPath->Size = System::Drawing::Size(508, 30);
 			this->tbGedeminPath->TabIndex = 18;
 			this->tbGedeminPath->Text = L"Поиск gedemin.exe...";
 			// 
@@ -688,7 +745,7 @@ namespace GS_DataBaseUpdate {
 			this->gbStatus->Controls->Add(this->dgvEventLog);
 			this->gbStatus->Location = System::Drawing::Point(633, 28);
 			this->gbStatus->Name = L"gbStatus";
-			this->gbStatus->Size = System::Drawing::Size(236, 447);
+			this->gbStatus->Size = System::Drawing::Size(236, 535);
 			this->gbStatus->TabIndex = 19;
 			this->gbStatus->TabStop = false;
 			// 
@@ -734,7 +791,7 @@ namespace GS_DataBaseUpdate {
 			this->dgvEventLog->RowTemplate->Resizable = System::Windows::Forms::DataGridViewTriState::True;
 			this->dgvEventLog->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
 			this->dgvEventLog->SelectionMode = System::Windows::Forms::DataGridViewSelectionMode::FullRowSelect;
-			this->dgvEventLog->Size = System::Drawing::Size(224, 413);
+			this->dgvEventLog->Size = System::Drawing::Size(224, 501);
 			this->dgvEventLog->TabIndex = 0;
 			this->dgvEventLog->RowsAdded += gcnew System::Windows::Forms::DataGridViewRowsAddedEventHandler(this, &frmMain::dgvEventLog_RowsAdded);
 			// 
@@ -767,14 +824,6 @@ namespace GS_DataBaseUpdate {
 			this->Date->ReadOnly = true;
 			this->Date->Visible = false;
 			// 
-			// statusStrip2
-			// 
-			this->statusStrip2->Location = System::Drawing::Point(0, 486);
-			this->statusStrip2->Name = L"statusStrip2";
-			this->statusStrip2->Size = System::Drawing::Size(881, 22);
-			this->statusStrip2->TabIndex = 20;
-			this->statusStrip2->Text = L"statusStrip2";
-			// 
 			// cmsLog
 			// 
 			this->cmsLog->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->tsmiClear });
@@ -788,11 +837,19 @@ namespace GS_DataBaseUpdate {
 			this->tsmiClear->Text = L"Очистить";
 			this->tsmiClear->Click += gcnew System::EventHandler(this, &frmMain::tsmiClear_Click);
 			// 
+			// statusStrip2
+			// 
+			this->statusStrip2->Location = System::Drawing::Point(0, 574);
+			this->statusStrip2->Name = L"statusStrip2";
+			this->statusStrip2->Size = System::Drawing::Size(881, 22);
+			this->statusStrip2->TabIndex = 20;
+			this->statusStrip2->Text = L"statusStrip2";
+			// 
 			// frmMain
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(881, 508);
+			this->ClientSize = System::Drawing::Size(881, 596);
 			this->Controls->Add(this->statusStrip2);
 			this->Controls->Add(this->gbStatus);
 			this->Controls->Add(this->toolStrip1);
@@ -809,6 +866,8 @@ namespace GS_DataBaseUpdate {
 			this->toolStrip1->PerformLayout();
 			this->gbMain->ResumeLayout(false);
 			this->gbMain->PerformLayout();
+			this->pnlNS->ResumeLayout(false);
+			this->pnlNS->PerformLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvNameSpace))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgvDBPath))->EndInit();
 			this->gbStatus->ResumeLayout(false);
@@ -819,424 +878,30 @@ namespace GS_DataBaseUpdate {
 
 		}
 #pragma endregion
-
-
-	public: TString AddStrings(TString &str1, TString &str2) {
-		TString tmp;
-		tmp.append(str1);
-		tmp.append(str2);
-
-		return tmp;
-	}
-	public: TString AddStrings(const TCHAR* str1, TString &str2) {
-		TString tmp;
-		tmp.append(TString(str1));
-		tmp.append(str2);
-
-		return tmp;
-	}
-	public: TString AddStrings(TString &str1, const TCHAR* str2) {
-		TString tmp;
-		tmp.append(str1);
-		tmp.append(TString(str2));
-
-		return tmp;
-	}
-	public: TString AddStrings(TString &str1, TString &str2, TString &str3) {
-		TString tmp;
-		tmp.append(str1);
-		tmp.append(str2);
-		tmp.append(str3);
-
-		return tmp;
-	}
-	private: System::Void AddToEventLog(TString str, BOOL isError, BOOL withMsgBox) {
-
-		if (str == TString()) return void();
-
-		char bufTime[80], bufDate[80];
-		time_t t = time(0);
-		struct tm now = *localtime(&t);
-
-		strftime(bufTime, sizeof(bufTime), "%X", &now);
-		strftime(bufDate, sizeof(bufDate), "%d-%m-%Y", &now);
-
-		dgvEventLog->Rows->Add(
-			gcnew String(str.c_str()),
-			isError,
-			gcnew String(bufTime),
-			gcnew String(bufDate));
-
-		dgvEventLog->ClearSelection();
-
-		if (withMsgBox) {
-			MessageBox::Show(gcnew String(str.c_str()), "Внимание!", MessageBoxButtons::OK, MessageBoxIcon::Error);
-		}
-
-		//delete[] bufTime;
-		//delete[] bufDate;
-	}
-	private: TString SetDouleSlash(TString &str) {
-		TString s = str;
-		auto it = find(s.begin(), s.end(), '\\');
-		while (it != s.end()) {
-			auto it2 = s.insert(it, '\\');
-			it = find(it2 + 2, s.end(), '\\');
-		}
-		return s;
-	}
-	private: System::Void btnDBPathAdd_Click(System::Object^  sender, System::EventArgs^  e) {
-		ofdDBPath->Title = "Выберите базу данных";
-		ofdDBPath->Filter = "Файлы базы данных (*.FDB)|*.FDB|Все файлы (*.*)|*.*";
-		ofdDBPath->FileName = "";
-		ofdDBPath->InitialDirectory = gcnew String(sLastDBPath.c_str());
-
-		AddToEventLog(L"Выбор базы данных.", false, false);
-
-		if (ofdDBPath->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-
-			TString tmp = msclr::interop::marshal_as<TString>((String^)ofdDBPath->FileName);
-			string::size_type pos = tmp.find_last_of(L"\\/");
-			sLastDBPath = tmp.substr(0, pos);
-
-			DWORD res;
-			res = WritePrivateProfileString(
-				TEXT("PathSection"),
-				searchDBPath.c_str(),
-				sLastDBPath.c_str(),
-				AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
-
-			if (res == 0) {
-				AddToEventLog(GetLastErrorDescription(), true, false);
-			}
-
-			dgvDBPath->Rows->Add(dgvDBPath->Rows->Count, ofdDBPath->FileName);
-
-			AddToEventLog(GetLastErrorDescription(), true, false);
-		}
-	}
-	private: System::Void btnDBPathDelete_Click(System::Object^  sender, System::EventArgs^  e) {
-
-		int iRecCount = dgvDBPath->Rows->Count;
-
-		if (iRecCount <= 1) return void();
-
-		int iCurRow = dgvDBPath->CurrentCell->RowIndex;
-
-		if ((iCurRow + 1) == iRecCount) return void();
-
-		dgvDBPath->Rows->RemoveAt(dgvDBPath->CurrentCell->RowIndex);
-
-		AddToEventLog(GetLastErrorDescription(), true, false);
-
-		/*Delete all rows*/
-		//while (iRecCount > 1) dgvDBPath->Rows->RemoveAt(0);
-	}
-	private: System::Void btnNameSpaceAdd_Click(System::Object^  sender, System::EventArgs^  e) {
-		ofdNameSpace->Title = "Выберите файлы ПИ";
-		ofdNameSpace->Filter = "Файлы YML|*.yml";
-		ofdNameSpace->FileName = "";
-		ofdNameSpace->Multiselect = true;
-		ofdNameSpace->InitialDirectory = gcnew String(sLastNSPath.c_str());
-
-		AddToEventLog(L"Выбор файлов ПИ.", false, false);
-
-		if (ofdNameSpace->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-
-			TString tmp = msclr::interop::marshal_as<TString>((String^)ofdNameSpace->FileName);
-			string::size_type pos = tmp.find_last_of(L"\\/");
-			sLastNSPath = tmp.substr(0, pos);
-
-			DWORD res;
-			res = WritePrivateProfileString(
-				TEXT("PathSection"),
-				searchNSPath.c_str(),
-				sLastNSPath.c_str(),
-				AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
-
-			if (res == 0) {
-				AddToEventLog(GetLastErrorDescription(), true, false);
-			}
-
-			int iFileCount = ofdNameSpace->SafeFileNames->Length;
-
-			for (int i = 0; i < iFileCount; i++) {
-				dgvNameSpace->Rows->Add(dgvNameSpace->Rows->Count, ofdNameSpace->SafeFileNames[i], ofdNameSpace->FileNames[i]);
-
-				AddToEventLog(GetLastErrorDescription(), true, false);
-			}
-		}
-	}
-	private: System::Void btnNameSpaceDelete_Click(System::Object^  sender, System::EventArgs^  e) {
-
-		int iRecCount = dgvNameSpace->Rows->Count;
-
-		if (iRecCount <= 1) return void();
-
-		int iCurRow = dgvNameSpace->CurrentCell->RowIndex;
-
-		if ((iCurRow + 1) == iRecCount) return void();
-
-		dgvNameSpace->Rows->RemoveAt(dgvNameSpace->CurrentCell->RowIndex);
-
-		AddToEventLog(GetLastErrorDescription(), true, false);
-	}
-	private: System::Void frmMain_Shown(System::Object^  sender, System::EventArgs^  e) {
-
-		TCHAR buffer[MAX_PATH];
-
-		GetModuleFileName(NULL, (LPWSTR)buffer, MAX_PATH);
-		string::size_type pos = TString(buffer).find_last_of(L"\\/");
-		sCurrentDir = TString(buffer).substr(0, pos);
-
-		DWORD result;
-
-		result = GetPrivateProfileString(
-			TEXT("PathSection"),
-			searchDBPath.c_str(),
-			NULL,
-			buffer,
-			MAX_PATH,
-			AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
-		if (result > 0)
-			sLastDBPath = TString(buffer);
-		else
-			AddToEventLog(AddStrings(L"Ошибка чтения Settings.ini", GetLastErrorDescription()), true, false);
-
-		result = GetPrivateProfileString(
-			TEXT("PathSection"),
-			searchNSPath.c_str(),
-			NULL,
-			buffer,
-			MAX_PATH,
-			AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
-		if (result > 0)
-			sLastNSPath = TString(buffer);
-		else
-			AddToEventLog(AddStrings(L"Ошибка чтения Settings.ini", GetLastErrorDescription()), true, false);
-
-		result = GetPrivateProfileString(
-			TEXT("Options"),
-			searchGedeminAfterOpen.c_str(),
-			NULL,
-			buffer,
-			MAX_PATH,
-			AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
-		if (result > 0)
-			SearchGedeminAfterOpen = (wcscmp(buffer, L"1") == 0 ? TRUE : FALSE);
-		else
-			AddToEventLog(AddStrings(L"Ошибка чтения Settings.ini", GetLastErrorDescription()), true, false);
-
-		if (SearchGedeminAfterOpen) {
-			Application::DoEvents();
-			SearchOnAllDrives(L"gedemin.exe");
-			AddToEventLog(L"", true, false);
-		}
-
-		if (sGedeminPath != TString()) {
-			tbGedeminPath->Text = gcnew String(sGedeminPath.c_str());
-			tbGedeminPath->BackColor = Color::PaleGreen;
-
-			AddToEventLog(AddStrings(L"Путь к gedemin.exe", sGedeminPath), false, false);
-		}
-		else {
-			tbGedeminPath->Text = "Не найден";
-			tbGedeminPath->BackColor = Color::LightCoral;
-		}
-	}
-	private: System::Void tsbRun_Click(System::Object^  sender, System::EventArgs^  e) {
-
-		int iCountDB = dgvDBPath->Rows->Count;
-		if (iCountDB <= 1) {
-			AddToEventLog(L"Не указаны файлы БД!", true, true);
-			return void();
-		}
-
-		int iCountNS = dgvNameSpace->Rows->Count;
-		if (iCountNS <= 1) {
-			AddToEventLog(L"Не указаны файлы ПИ!", true, true);
-			return void();
-		}
-
-		int THREAD_COUNT = iCountDB - 1;
-		/*создание массива пустых указателей на потоки, которые создадим дальше*/
-		HANDLE* Thread_Arr = new HANDLE[THREAD_COUNT];
-
-		/*Path to NameSpace directory*/
-		TString sNSDirPath = AddStrings(sCurrentDir, TString(L"\\GS_APP"));
-
-		if (DirectoryExists((sNSDirPath))) {
-			AddToEventLog(AddStrings(L"Удаление ", sNSDirPath), false, false);
-			if (DeleteDirectory(sNSDirPath)) {
-				AddToEventLog(L"Удаление успешно завершено.", false, false);
-			}
-			else {
-				AddToEventLog(GetLastErrorDescription(), true, false);
-				return void();
-			}
-		}
-
-		AddToEventLog(AddStrings(L"Создание ", sNSDirPath), false, false);
-		if (CreateDirectory(sNSDirPath.c_str(), NULL)) {
-			AddToEventLog(L"Создание успешно завершено.", false, false);
-		}
-		else {
-			AddToEventLog(GetLastErrorDescription(), true, false);
-		};
-
-
-		/*Create YAML file****************************************/
-		AddToEventLog(L"Содание пакета ПИ.", false, false);
-
-		TString sNSFileName = AddStrings(sNSDirPath, TString(L"\\GS.Temp.yml"));
-		stringstream MS;
-
-		MS << "Uses: " << endl;
-
-		const char* ptr;
-		TString sFileName, sFullFilePath;
-		string sTmp;
-
-		for (int i = 0; i < iCountNS - 1; i++) {
-
-			TString sFileName = msclr::interop::marshal_as<TString>((String^)dgvNameSpace->Rows[i]->Cells[1]->Value);
-			TString sFullFilePath = msclr::interop::marshal_as<TString>((String^)dgvNameSpace->Rows[i]->Cells[2]->Value);
-
-			if (!copyFile(sFullFilePath.c_str(), AddStrings(AddStrings(sNSDirPath, TString(L"\\")), sFileName).c_str())) {
-				AddToEventLog(GetLastErrorDescription(), true, false);
-				return void();
-			}
-
-			ptr = (const char*)(Marshal::StringToHGlobalAnsi((String^)dgvNameSpace->Rows[i]->Cells[1]->Value)).ToPointer();
-			string sTmp = string(ptr);
-
-			MS << "  - \"" + GetRUIDNSFile(sFullFilePath) + " " + sTmp + "\"" << endl;
-		}
-
-		ofstream NSFile(sNSFileName.c_str(), ios::out | ios::binary);
-		NSFile.imbue(locale(NSFile.getloc(), new codecvt_utf8_utf16<char>));
-
-		NSFile << "%YAML 1.1" << endl;
-		NSFile << "--- " << endl;
-		NSFile << "StructureVersion: \"1.0\"" << endl;
-		NSFile << "Properties: " << endl;
-		NSFile << "  RUID: 147666666_666666666" << endl;
-		NSFile << "  Name: \"GS.Temp\"" << endl;
-		NSFile << "  Caption: \"GS.Temp\"" << endl;
-		NSFile << "  Version: \"1.0.0.1\"" << endl;
-		NSFile << "  Optional: False" << endl;
-		NSFile << "  Internal: False" << endl;
-		NSFile << "  MD5: " + GetMD5(MS) << endl;
-		NSFile << MS.str();
-
-		NSFile.close();
-
-		AddToEventLog(GetLastErrorDescription(), true, false);
-		/*********************************************************/
-
-		ForThread *SendPr;
-		TString s;
-
-		for (int i = 0; i < THREAD_COUNT; i++) {
-			SendPr = new ForThread;
-
-			s = AddStrings(quote, msclr::interop::marshal_as<TString>((String^)dgvDBPath->Rows[i]->Cells[1]->Value), quote);
-
-			basic_ostringstream<TCHAR> out;
-
-			out << AddStrings(quote, sGedeminPath, quote).c_str()
-				<< " /sn " << s.c_str()
-				<< " /user Administrator"
-				<< " /password Administrator"
-				<< " /q /SP "
-				<< AddStrings(quote, sNSDirPath, quote).c_str()
-				<< " /sfn "
-				<< AddStrings(quote, sNSFileName, quote).c_str()
-				<< endl;
-
-			SendPr->str = out.str();
-
-			Thread_Arr[i] = CreateThread(0, 0, MyThread, SendPr, 0, 0);
-
-			if (Thread_Arr[i] == NULL) {
-				AddToEventLog(GetLastErrorDescription(), true, false);
-			}
-		}
-
-		WaitForMultipleObjects(THREAD_COUNT, Thread_Arr, TRUE, INFINITE);
-
-		for (int i = 0; i < iCountDB - 1; i++) {
-			CloseHandle(Thread_Arr[i]);
-		}
-	}
-	private: System::Void btnChooseEXE_Click(System::Object^  sender, System::EventArgs^  e) {
-
-		ofdGedeminPath->Title = "Выберите файл gedemin.exe";
-		ofdGedeminPath->Filter = "Файлы EXE|*.exe";
-		ofdGedeminPath->FileName = "gedemin.exe";
-		ofdNameSpace->RestoreDirectory = true;
-
-		if (ofdNameSpace->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-			sGedeminPath = msclr::interop::marshal_as<TString>((String^)ofdNameSpace->FileName);
-
-			tbGedeminPath->Text = gcnew String(sGedeminPath.c_str());
-			tbGedeminPath->BackColor = Color::PaleGreen;
-		}
-	}
-	private: System::Void tsmiExit_Click(System::Object^  sender, System::EventArgs^  e) {
-		System::Windows::Forms::DialogResult Result;
-		Result = MessageBox::Show("Вы точно хотите выйти?", "Внимание!", MessageBoxButtons::YesNo, MessageBoxIcon::Question);
-
-		if (Result == System::Windows::Forms::DialogResult::Yes)
-			Application::Exit();
-	}
-	private: System::Void frmMain_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
-		__super::OnClosing(e);
-		if (e->CloseReason == System::Windows::Forms::CloseReason::ApplicationExitCall)
-			Application::Exit();
-		else {
-			if (MessageBox::Show("Вы точно хотите выйти?", "Выход", MessageBoxButtons::YesNo,
-				MessageBoxIcon::Question) == System::Windows::Forms::DialogResult::No)
-				e->Cancel = true;
-			else
-				Application::Exit();
-		}
-	}
-	private: System::Void dgvEventLog_RowsAdded(System::Object^  sender, System::Windows::Forms::DataGridViewRowsAddedEventArgs^  e) {
-
-		dgvEventLog->Rows[e->RowIndex]->DefaultCellStyle->ForeColor = Color::Blue;
-
-		if (Convert::ToInt16(dgvEventLog->Rows[e->RowIndex]->Cells[1]->Value->ToString()) == 1)
-			dgvEventLog->Rows[e->RowIndex]->DefaultCellStyle->ForeColor = Color::Red;
-
-	}
-	private: System::Void tsmiOptions_Click(System::Object^  sender, System::EventArgs^  e) {
-
-		frmOptions^ frmOpt = gcnew frmOptions();
 		
-		if (frmOpt->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-
-			SearchGedeminAfterOpen = frmOpt->cbSearchGedemin->Checked;
-
-			DWORD res;
-			res = WritePrivateProfileString(
-				TEXT("Options"),
-				searchGedeminAfterOpen.c_str(),
-				((SearchGedeminAfterOpen ? TString(L"1") : TString(L"0"))).c_str(),
-				AddStrings(sCurrentDir, TString(L"\\Settings.ini")).c_str());
-
-			if (res == 0) {
-				AddToEventLog(GetLastErrorDescription(), true, false);
-			}
-
-		}		
-	}
-	private: System::Void tsmiAbout_Click(System::Object^  sender, System::EventArgs^  e) {
-		frmAboutProgram^ frmAbout = gcnew frmAboutProgram();
-		frmAbout->ShowDialog();
-	}
-private: System::Void tsmiClear_Click(System::Object^  sender, System::EventArgs^  e) {
-	dgvEventLog->Rows->Clear();
-}
+		
+	public: TString toString(String^);
+	public: TString AddStrings(TString &str1, TString &str2);
+	public: TString AddStrings(const TCHAR* str1, TString &str2);
+    public: TString AddStrings(const TCHAR* str1, const TCHAR* str2);
+	public: TString AddStrings(TString &str1, const TCHAR* str2);
+	public: TString AddStrings(TString &str1, TString &str2, TString &str3);
+	private: System::Void AddToEventLog(TString str, BOOL isError, BOOL withMsgBox);
+	private: TString SetDouleSlash(TString &str);
+	private: System::Void btnDBPathAdd_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void btnDBPathDelete_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void btnNameSpaceAdd_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void btnNameSpaceDelete_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void frmMain_Shown(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void tsbRun_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void btnChooseEXE_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void tsmiExit_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void frmMain_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e);
+	private: System::Void dgvEventLog_RowsAdded(System::Object^  sender, System::Windows::Forms::DataGridViewRowsAddedEventArgs^  e);
+	private: System::Void tsmiOptions_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void tsmiAbout_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void tsmiClear_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void cbIsPackage_CheckedChanged(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void btnChooseNSPath_Click(System::Object^  sender, System::EventArgs^  e); 
 };
 }

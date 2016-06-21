@@ -321,8 +321,6 @@ namespace GS_DataBaseUpdate {
 		//tbGedeminPath->Text = gcnew String(GS_DataBaseUpdate::frmMain::sGedeminPath.c_str());
 		//GS_DataBaseUpdate::frmMain::AddStrings(L"", TString(L""));
 
-		
-
 		TCHAR buffer[MAX_PATH];
 
 		GetModuleFileName(NULL, (LPWSTR)buffer, MAX_PATH);
@@ -338,7 +336,6 @@ namespace GS_DataBaseUpdate {
 		tbSettingsPath->Text = gcnew String(SettingPath.c_str());
 
 		//tbGedeminPath->Text = gcnew String(sGedeminPath.c_str());
-
 
 		result = GetPrivateProfileString(
 			TEXT("PathSection"),
@@ -360,7 +357,6 @@ namespace GS_DataBaseUpdate {
 		if (result > 0)
 			tbLastNSPath->Text = gcnew String(buffer);
 
-
 		result = GetPrivateProfileString(
 			TEXT("Options"),
 			TEXT("SearchGedeminAfterOpen"),
@@ -370,6 +366,17 @@ namespace GS_DataBaseUpdate {
 			SettingPath.c_str());
 		if (result > 0)
 			cbSearchGedemin->Checked = (wcscmp(buffer, L"1") == 0 ? TRUE : FALSE);
+
+		result = GetPrivateProfileString(
+			TEXT("PathSection"),
+			TEXT("GedeminPath"),
+			NULL,
+			buffer,
+			MAX_PATH,
+			SettingPath.c_str());
+		if (result > 0)
+			tbGedeminPath->Text = gcnew String(buffer);
+
 	}
 	};
 }
