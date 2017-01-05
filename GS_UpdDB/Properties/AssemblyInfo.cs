@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("GS_UpdDB")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Ural SoftPERM")]
+[assembly: AssemblyCompany("Golden Software")]
 [assembly: AssemblyProduct("GS_UpdDB")]
-[assembly: AssemblyCopyright("Copyright © Ural SoftPERM 2016")]
+[assembly: AssemblyCopyright("Copyright © Golden Software 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.1")]
+[assembly: AssemblyFileVersion("1.0.0.1")]

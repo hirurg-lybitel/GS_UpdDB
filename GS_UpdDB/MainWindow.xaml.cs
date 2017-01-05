@@ -30,9 +30,12 @@ using DWORD = System.UInt32;
 using Path = System.IO.Path;
 
 
+using System.Net;
+
+
 namespace GS_UpdDB
 {
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Window {       
 
         private class m_DataBase
         {
@@ -77,6 +80,11 @@ namespace GS_UpdDB
         private bool isApplicationExitCall = false;
         private bool IsInProcess;
 
+        private const String g_urlNewFile = "https://github.com/hirurg-lybitel/GS_UpdDB/blob/master/GS_UpdDB/bin/Release/GS_UpdDB.exe";
+        private const String g_NewFileName = "GS_UpdDB.update";
+        private const String g_urlUpdater = "https://github.com/hirurg-lybitel/GS_UpdDB/blob/master/GS_UpdDB/bin/Release/GS_UpdDB.exe";
+        private const String g_UpdaterFileName= "updater.exe";
+
         /************************************************************************/
 
         public MainWindow() {
@@ -87,29 +95,28 @@ namespace GS_UpdDB
             Application.Current.MainWindow.Closing += new CancelEventHandler(MainWin_Closing);
 
 
-            for (int i = 0; i <= 10; i++)
-            {
-                m_NameSpace db = new m_NameSpace()
-                {
-                    Number = i,
-                    NSFileName = ";.j',k'h,kh,mm,h'",
-                    NSPath = "afafdasfsdfs,kmgpi dug dukghsuo ja"
-                };
+            //for (int i = 0; i <= 10; i++)
+            //{
+            //    m_NameSpace db = new m_NameSpace()
+            //    {
+            //        Number = i,
+            //        NSFileName = ";.j',k'h,kh,mm,h'",
+            //        NSPath = "afafdasfsdfs,kmgpi dug dukghsuo ja"
+            //    };
 
-                dgNameSpaceItemsSource.Add(db);
-            }
+            //    dgNameSpaceItemsSource.Add(db);
+            //}
 
-            for (int i = 0; i <= 10; i++)
-            {
-                m_DataBase db = new m_DataBase()
-                {
-                    Number = i,
-                    DBPath = "afafdasfsdfs,kmgpi dug dukghsuo ja"
-                };
+            //for (int i = 0; i <= 10; i++)
+            //{
+            //    m_DataBase db = new m_DataBase()
+            //    {
+            //        Number = i,
+            //        DBPath = "afafdasfsdfs,kmgpi dug dukghsuo ja"
+            //    };
 
-                dgDataBaseItemsSource.Add(db);
-            }
-
+            //    dgDataBaseItemsSource.Add(db);
+            //}
         }
 
         private void InitializeGlobalVariables() {
@@ -435,6 +442,70 @@ namespace GS_UpdDB
                 return true;
             }
             return false;
+        }
+
+        private bool DownloadFile(String url, String FileName) {
+
+            AddToEventLog("Скачивание файла " + FileName, false, false);
+
+            try
+            {
+                using (var client = new WebClient())
+                {
+
+                    client.DownloadFile(new Uri(url), FileName);
+
+                    AddToEventLog("Скачивание файла завершено.", false, false);
+                    return true;
+                }
+            }
+            catch
+            {
+                AddToEventLog("Не удалось скачать файл.\n" + GetLastErrorDescription(), true, true);
+                return false;
+            }
+            
+        }
+
+        private void CheckUpdates(bool isSilent) {
+
+            if (!(File.Exists(g_NewFileName))) return;
+
+            try {
+                Version versionNewFile      = new Version(FileVersionInfo.GetVersionInfo(g_NewFileName).FileVersion);
+                Version versionCurrentFile  = new Version(CurrentApplicationVersion());
+
+                if (versionNewFile > versionCurrentFile) {
+                    AddToEventLog("Доступна новая версия программы.", false, false);
+                    MessageBoxResult res = MessageBox.Show("Доступна новая версия программы.\nОбновить сейчас", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (res == MessageBoxResult.OK)
+                    {
+                        DownloadFile("", g_UpdaterFileName);
+                        if (!(File.Exists(g_NewFileName))) return;
+
+                        Process.Start(g_UpdaterFileName, g_NewFileName + " \"" + Process.GetCurrentProcess().ProcessName + "\"");
+                        Process.GetCurrentProcess().CloseMainWindow();
+                    }
+                }
+                if (versionNewFile == versionCurrentFile) {
+                    AddToEventLog("У вас установлена самая последняя весрия.", false, isSilent);
+                    return;
+                }
+            }
+            catch
+            {
+                AddToEventLog(GetLastErrorDescription(), true, true);
+                if (File.Exists(g_NewFileName))  File.Delete(g_NewFileName); 
+                if (File.Exists(g_UpdaterFileName)) File.Delete(g_UpdaterFileName);
+            }           
+        }
+
+        public String CurrentApplicationVersion() {
+            FileVersionInfo myFileVersionInfo;
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            myFileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return myFileVersionInfo.FileVersion;
         }
         /************************************************************************/
 
@@ -801,6 +872,20 @@ namespace GS_UpdDB
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e) {
+
+
+
+
+            if (!(DownloadFile(g_urlNewFile, g_NewFileName))) return;
+
+            CheckUpdates(true);
+
+
+
+
+
+
+
         }
 
         private void btnRun_Click(object sender, RoutedEventArgs e) {
