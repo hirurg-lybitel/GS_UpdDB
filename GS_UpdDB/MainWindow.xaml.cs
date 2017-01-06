@@ -29,9 +29,8 @@ using dlgResult = System.Windows.Forms.DialogResult;
 using DWORD = System.UInt32;
 using Path = System.IO.Path;
 
-
 using System.Net;
-
+using System.Globalization;
 
 namespace GS_UpdDB
 {
@@ -82,7 +81,8 @@ namespace GS_UpdDB
 
         private const String g_urlNewFile = "https://github.com/hirurg-lybitel/GS_UpdDB/blob/master/GS_UpdDB/bin/Release/GS_UpdDB.exe";
         private const String g_NewFileName = "GS_UpdDB.update";
-        private const String g_urlUpdater = "https://github.com/hirurg-lybitel/GS_UpdDB/blob/master/GS_UpdDB/bin/Release/GS_UpdDB.exe";
+        
+        private const String g_urlUpdater = "https://github.com/hirurg-lybitel/Updater/blob/master/Updater/bin/Release/Updater.exe";
         private const String g_UpdaterFileName= "updater.exe";
 
         /************************************************************************/
@@ -93,30 +93,6 @@ namespace GS_UpdDB
             InitializeGlobalVariables();
 
             Application.Current.MainWindow.Closing += new CancelEventHandler(MainWin_Closing);
-
-
-            //for (int i = 0; i <= 10; i++)
-            //{
-            //    m_NameSpace db = new m_NameSpace()
-            //    {
-            //        Number = i,
-            //        NSFileName = ";.j',k'h,kh,mm,h'",
-            //        NSPath = "afafdasfsdfs,kmgpi dug dukghsuo ja"
-            //    };
-
-            //    dgNameSpaceItemsSource.Add(db);
-            //}
-
-            //for (int i = 0; i <= 10; i++)
-            //{
-            //    m_DataBase db = new m_DataBase()
-            //    {
-            //        Number = i,
-            //        DBPath = "afafdasfsdfs,kmgpi dug dukghsuo ja"
-            //    };
-
-            //    dgDataBaseItemsSource.Add(db);
-            //}
         }
 
         private void InitializeGlobalVariables() {
@@ -371,8 +347,9 @@ namespace GS_UpdDB
 
             if (sLogPath == String.Empty) sLogPath = sCurrentDir + "\\log.txt";
 
-            FileStream fs = new FileStream(sLogPath, FileMode.OpenOrCreate, FileAccess.Write);
-            StreamWriter sw = new StreamWriter(fs);
+            if (!File.Exists(sLogPath)) File.CreateText(sLogPath);
+
+            StreamWriter sw = File.AppendText(sLogPath);
             sw.WriteLine(DateTime.Now.ToString() + " : " + str + ";");
             sw.Close();
 
@@ -495,7 +472,7 @@ namespace GS_UpdDB
             }
             catch
             {
-                AddToEventLog(GetLastErrorDescription(), true, true);
+                AddToEventLog("Ошибка обновления программы. " + GetLastErrorDescription(), true, true);
                 if (File.Exists(g_NewFileName))  File.Delete(g_NewFileName); 
                 if (File.Exists(g_UpdaterFileName)) File.Delete(g_UpdaterFileName);
             }           
@@ -507,8 +484,18 @@ namespace GS_UpdDB
             myFileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
             return myFileVersionInfo.FileVersion;
         }
-        /************************************************************************/
 
+        private void DeleteUpdater() {
+            if (!(File.Exists(g_UpdaterFileName))) return;
+            try
+            {
+                File.Delete(g_UpdaterFileName);
+            }
+            catch(Exception err) {
+                AddToEventLog("Ошибка удаления файла " + g_UpdaterFileName + "\n" + err, true, false);
+            }
+        }
+        /************************************************************************/
 
 
 
@@ -538,7 +525,10 @@ namespace GS_UpdDB
             }
         }
 
-        private void MainWin_Loaded(object sender, RoutedEventArgs e){
+        private void MainWin_Loaded(object sender, RoutedEventArgs e){      
+
+            DeleteUpdater();
+
             sCurrentDir = Directory.GetCurrentDirectory();
 
             sSettingFileName = sCurrentDir + "\\Settings.ini";
@@ -555,7 +545,7 @@ namespace GS_UpdDB
             if (result > 0)
                 sGedeminPath = buffer;
             else
-                AddToEventLog("Ошибка чтения Settings.ini\n" + GetLastErrorDescription(), true, false);
+                AddToEventLog("Ошибка чтения параметра " + searchGedeminPath + " в Settings.ini\n" + GetLastErrorDescription(), true, false);
 
             if (sGedeminPath != String.Empty) {
                 tbGedeminPath.Text = sGedeminPath;
@@ -572,7 +562,7 @@ namespace GS_UpdDB
             if (result > 0)
                 sLastDBPath = buffer;
             else
-                AddToEventLog("Ошибка чтения Settings.ini\n" + GetLastErrorDescription(), true, false);
+                AddToEventLog("Ошибка чтения параметра " + searchDBPath + " в Settings.ini\n" + GetLastErrorDescription(), true, false);
 
             result = _GetPrivateProfileString(
                             "PathSection",
@@ -584,7 +574,7 @@ namespace GS_UpdDB
             if (result > 0)
                 sLastNSPath = buffer;
             else
-                AddToEventLog("Ошибка чтения Settings.ini\n" + GetLastErrorDescription(), true, false);
+                AddToEventLog("Ошибка чтения параметра " + searchNSPath + " в Settings.ini\n" + GetLastErrorDescription(), true, false);
 
             result = _GetPrivateProfileString(
                             "PathSection",
@@ -596,7 +586,7 @@ namespace GS_UpdDB
             if (result > 0)
                 sLogPath = buffer;
             else
-                AddToEventLog("Ошибка чтения Settings.ini\n" + GetLastErrorDescription(), true, false);
+                AddToEventLog("Ошибка чтения параметра " + searchLogPath + " в Settings.ini\n" + GetLastErrorDescription(), true, false);
 
             result = _GetPrivateProfileString(
                             "Options",
@@ -608,7 +598,7 @@ namespace GS_UpdDB
             if (result > 0)
                 isSearchGedeminAfterOpen = (buffer == "1");
             else
-                AddToEventLog("Ошибка чтения Settings.ini\n" + GetLastErrorDescription(), true, false);
+                AddToEventLog("Ошибка чтения параметра " + searchGedeminAfterOpen + " в Settings.ini\n" + GetLastErrorDescription(), true, false);
 
             result = _GetPrivateProfileString(
                             "Options",
@@ -620,7 +610,7 @@ namespace GS_UpdDB
             if (result > 0)
                 isLogging = (buffer == "1");
             else
-                AddToEventLog("Ошибка чтения Settings.ini\n" + GetLastErrorDescription(), true, false);
+                AddToEventLog("Ошибка чтения параметра " + searchIsLogging + " в Settings.ini\n" + GetLastErrorDescription(), true, false);
 
 
 
@@ -664,7 +654,7 @@ namespace GS_UpdDB
 
                 if (result == 0)
                 {
-                    AddToEventLog(GetLastErrorDescription(), true, false);
+                    AddToEventLog("Ошибка при записи в Settings.ini. " + GetLastErrorDescription(), true, false);
                 }
             }
         }
@@ -690,7 +680,7 @@ namespace GS_UpdDB
                     sSettingFileName);
 
                 if (result == 0){
-                    AddToEventLog(GetLastErrorDescription(), true, false);
+                    AddToEventLog("Ошибка при записи в Settings.ini. " + GetLastErrorDescription(), true, false);
                 }
 
                 m_DataBase db = new m_DataBase()
@@ -700,8 +690,6 @@ namespace GS_UpdDB
                 };
 
                 dgDataBaseItemsSource.Add(db);
-
-                AddToEventLog(GetLastErrorDescription(), true, false);
 
             }
         }
@@ -726,7 +714,7 @@ namespace GS_UpdDB
                 dgDataBaseItemsSource.Remove(db);
             }
 
-                AddToEventLog(GetLastErrorDescription(), true, false);
+                AddToEventLog("Ошибка при удалении записи из списка выбранных БД. " + GetLastErrorDescription(), true, false);
         }
 
         private void btnNameSpaceAdd_Click(object sender, RoutedEventArgs e) {
@@ -757,7 +745,7 @@ namespace GS_UpdDB
 
                 if (result == 0)
                 {
-                    AddToEventLog(GetLastErrorDescription(), true, false);
+                    AddToEventLog("Ошибка при записи в Settings.ini. " + GetLastErrorDescription(), true, false);
                 }
 
                 int iFileCount = ofdNameSpace.SafeFileNames.Length;
@@ -772,7 +760,6 @@ namespace GS_UpdDB
 
                     dgNameSpaceItemsSource.Add(ns);
 
-                    AddToEventLog(GetLastErrorDescription(), true, false);
                 }
             }
         }
@@ -796,7 +783,7 @@ namespace GS_UpdDB
                 dgNameSpaceItemsSource.Remove(ns);
             }
 
-            AddToEventLog(GetLastErrorDescription(), true, false);
+            AddToEventLog("Ошибка при удалении записи из списка выбранных ПИ. " + GetLastErrorDescription(), true, false);
         }
 
         private void btnChooseNSPath_Click(object sender, RoutedEventArgs e) {
@@ -849,7 +836,7 @@ namespace GS_UpdDB
                     (isLogging ? "1" : "0"),
                     sSettingFileName);
 
-                if (result == 0) AddToEventLog(GetLastErrorDescription(), true, false);
+                if (result == 0) AddToEventLog("Ошибка при записи в Settings.ini. " + GetLastErrorDescription(), true, false);
 
                 result = WritePrivateProfileString(
                     "Options",
@@ -857,7 +844,7 @@ namespace GS_UpdDB
                     (isSearchGedeminAfterOpen ? "1" : "0"),
                     sSettingFileName);
 
-                if (result == 0) AddToEventLog(GetLastErrorDescription(), true, false);
+                if (result == 0) AddToEventLog("Ошибка при записи в Settings.ini. " + GetLastErrorDescription(), true, false);
 
             }
             else {
@@ -866,25 +853,19 @@ namespace GS_UpdDB
         }
 
         private void btnAbout_Click(object sender, RoutedEventArgs e) {
-            AboutProgram about = new AboutProgram();
+
+            AboutProgram about = new AboutProgram(this);
 
             about.ShowDialog();
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e) {
 
-
-
-
             if (!(DownloadFile(g_urlNewFile, g_NewFileName))) return;
 
             CheckUpdates(true);
 
-
-
-
-
-
+            DeleteUpdater();
 
         }
 
@@ -922,7 +903,7 @@ namespace GS_UpdDB
                         AddToEventLog("Удаление успешно завершено.", false, false);
                     }
                     else {
-                        AddToEventLog(GetLastErrorDescription(), true, false);
+                        AddToEventLog("Ошибка при удалении " + sNSDirPath + ". "+ GetLastErrorDescription(), true, false);
                         return;
                     }
                 }
@@ -934,7 +915,7 @@ namespace GS_UpdDB
                     AddToEventLog("Создание успешно завершено.", false, false);
                 }
                 catch {
-                    AddToEventLog(GetLastErrorDescription(), true, false);
+                    AddToEventLog("Ошибка при создании " + sNSDirPath + ". " + GetLastErrorDescription(), true, false);
                 }
             }
             else
@@ -951,7 +932,7 @@ namespace GS_UpdDB
             }
             catch
             {
-                AddToEventLog(GetLastErrorDescription(), true, false);
+                AddToEventLog("Ошибка при удалении " + sNSFileName + ". " + GetLastErrorDescription(), true, false);
             }
 
             MemoryStream stream = new MemoryStream();
@@ -979,7 +960,7 @@ namespace GS_UpdDB
                 {
                     if (!copyFile(sFullFilePath, sNSDirPath + "\\" + sFileName))
                     {
-                        AddToEventLog(GetLastErrorDescription(), true, false);
+                        AddToEventLog("Ошибка при копировании из " + sNSDirPath + "в " + sNSDirPath + "\\" + sFileName + ". " + GetLastErrorDescription(), true, false);
                         return;
                     }
                 }

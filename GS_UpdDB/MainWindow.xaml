@@ -15,160 +15,257 @@
         WindowStartupLocation="CenterScreen"
         Style="{StaticResource MainWindowStyle}">
 
-    <Grid Height="Auto">
+    <Grid >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="88*"/>
-            <ColumnDefinition Width="7*"/>
-            <ColumnDefinition Width="203*"/>
+            <ColumnDefinition Width="2.5*"/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Menu 
-            Height="30" 
-            HorizontalAlignment="Left" 
-            Name="menu" 
-            VerticalAlignment="Top" 
-            Width="503" Background="{x:Null}" Margin="0,0,-218,0" Grid.ColumnSpan="2">
+        <Grid Grid.Column="0">
 
-            <MenuItem Header="Файл">
-                <MenuItem 
-                    Header="Выход" 
-                    Click="btnExite_Click"></MenuItem>
-            </MenuItem>
-            <MenuItem Header="Сервис">
-                <MenuItem 
-                    Header="Параметры" 
-                    Click="btnOptions_Click">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Menu 
+                Name="menu" 
+                Grid.Row="0"            
+                Grid.ColumnSpan="2"
+                VerticalAlignment="Top" 
+                Height="30" 
+                HorizontalAlignment="Left"             
+                Width="503" 
+                Background="{x:Null}"                  
+            >
+                <MenuItem Header="Файл">
+                    <MenuItem 
+                        Header="Выход" 
+                        Click="btnExite_Click"></MenuItem>
                 </MenuItem>
-                <MenuItem Header="Обновление" Click="btnUpdate_Click"></MenuItem>
-                <MenuItem Header="О программе" Click="btnAbout_Click"></MenuItem>
-            </MenuItem>
-            <MenuItem 
-                Header="Запустить"
-                Click="btnRun_Click">
-                <MenuItem.Icon>
-                    <Image Source="Icons\Run.ico" Width="20" Height="20" Stretch="Uniform"/>
-                </MenuItem.Icon>
-            </MenuItem>
-        </Menu>
+                <MenuItem Header="Сервис">
+                    <MenuItem 
+                        Header="Параметры" 
+                        Click="btnOptions_Click">
+                    </MenuItem>
+                    <MenuItem Header="Обновление" Click="btnUpdate_Click"></MenuItem>
+                    <MenuItem Header="О программе" Click="btnAbout_Click"></MenuItem>
+                </MenuItem>
+                <MenuItem 
+                    Header="Запустить"
+                    Click="btnRun_Click">
+                    <MenuItem.Icon>
+                        <Image Source="Icons\Run.ico" Width="20" Height="20" Stretch="Uniform"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </Menu>
 
-        <Button
-            x:Name="btnChooseEXE"        
-            VerticalAlignment="Top"             
-            Margin="249.838,39,272.35,0"          
-            Content="Выбрать" Click="btnChooseEXE_Click" Grid.Column="2" Width="Auto"/>
-        <TextBox 
-            x:Name="tbGedeminPath" 
-            Margin="21.65,40,-244.838,0" 
-            Width="505"   
-            VerticalAlignment="Top" 
-            HorizontalAlignment="Left" 
-            Background="White" Grid.ColumnSpan="2"/>
+            <DockPanel 
+                Grid.Row="1"
+                VerticalAlignment="Stretch" 
+                Height="Auto"
+                Margin="20,10,10,10">
+                <DockPanel 
+                    HorizontalAlignment="Stretch" 
+                    VerticalAlignment="Stretch" 
+                    Height="Auto">
+                    <DockPanel 
+                        DockPanel.Dock="Right" 
+                        VerticalAlignment="Stretch" 
+                        Height="Auto">
 
-        <Button
-        	x:Name="btnDBPathAdd"        
-        	VerticalAlignment="Top"                      	
-            Margin="21.65,76,0,0" 
-            Content="Добавить" 
-            HorizontalAlignment="Left"        
-            Click="btnDBPathAdd_Click"/>
-        <Button
-        	x:Name="btnDBPathDelete"        
-        	VerticalAlignment="Top"      
-            HorizontalAlignment="Left"   
-        	Click="btnDBPathDelete_Click" 
-            Margin="112.65,76,0,0"
-            Content="Удалить"/>
-        <Border 
-            x:Name="Border_dgvDBPath"
-            BorderThickness="2" 
-            BorderBrush="{StaticResource isHighlightedColor}"            
-            CornerRadius="15" 
-            Width="590"  
-            Height="150" 
-            Grid.ColumnSpan="3" 
-            Margin="21.65,111,272.35,0" 
-            VerticalAlignment="Top" >
-            <!--Border.BitmapEffect>
+                        <Button            
+                            x:Name="btnChooseEXE"    
+                            Content="Выбрать" 
+                            Click="btnChooseEXE_Click" 
+                        />
+                    </DockPanel>
+
+                    <StackPanel 
+                        DockPanel.Dock="Left" 
+                        Width="Auto" 
+                        Margin="0,0,10,0"
+                        HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Center" 
+                        Orientation="Vertical">
+
+                        <TextBox             
+                            x:Name="tbGedeminPath"                                          
+                            VerticalAlignment="Center"            
+                            HorizontalAlignment="Stretch"                      
+                        />
+                    </StackPanel>
+                </DockPanel>
+            </DockPanel>
+
+            <StackPanel                    
+                Grid.Row="2"     
+                Margin="20,10,0,5">
+                <Button                        	
+        		    x:Name="btnDBPathAdd"             	            
+        		    Content="Добавить"                                                                 
+        		    Click="btnDBPathAdd_Click"
+                    Margin="0,0,10,0"/>
+                <Button        	
+        		    x:Name="btnDBPathDelete"          	                             
+        		    Click="btnDBPathDelete_Click"                      
+        		    Content="Удалить"/>
+            </StackPanel>
+            <Border 
+                x:Name="Border_dgvDBPath"   
+                Grid.Row="3"            
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                BorderThickness="2" 
+                BorderBrush="{StaticResource isHighlightedColor}"            
+                CornerRadius="15" 
+                Width="auto"  
+                Height="150" 
+                Margin="20,0,10,0"
+                 >
+                <!--Border.BitmapEffect>
                 <DropShadowBitmapEffect Color="#FF343436"/>
-            </Border.BitmapEffect-->
-            <Grid>
-                <Border                     
+                </Border.BitmapEffect-->
+                <Grid>
+                    <Border                     
                     x:Name="BDRounded"                                      
                     Background="Black"                     
                     CornerRadius="15"        
                     >
-                </Border>
-                <DataGrid  
-                    x:Name="dgvDBPath"                    
-                    ItemsSource="{Binding dgDataBaseItemsSource}" 
-                    BorderBrush="{x:Null}" 
-                    CanUserAddRows="True"
-                    AutoGenerateColumns="False"    
-                    Background="Transparent"
-                    HeadersVisibility="Column"
-                    AlternatingRowBackground="{StaticResource isHighlightedColor}"
-                    BorderThickness="0"
-                    VerticalGridLinesBrush="{x:Null}"
-                    HorizontalGridLinesBrush="{x:Null}"
-                    GridLinesVisibility="None"                    
+                    </Border>
+                    <DataGrid  
+                        x:Name="dgvDBPath"                    
+                        ItemsSource="{Binding dgDataBaseItemsSource}" 
+                        BorderBrush="{x:Null}" 
+                        CanUserAddRows="True"
+                        AutoGenerateColumns="False"    
+                        Background="Transparent"
+                        HeadersVisibility="Column"
+                        AlternatingRowBackground="{StaticResource isHighlightedColor}"
+                        BorderThickness="0"
+                        VerticalGridLinesBrush="{x:Null}"
+                        HorizontalGridLinesBrush="{x:Null}"
+                        GridLinesVisibility="None"                    
                     >
-                    <DataGrid.OpacityMask>
-                        <VisualBrush Visual="{Binding ElementName=BDRounded}"/>
-                    </DataGrid.OpacityMask>
-                    <DataGrid.Columns>
-                        <DataGridTextColumn 
-                            Binding="{Binding Path=Number}" 
-                            ClipboardContentBinding="{x:Null}" 
-                            Header="№" 
-                            CanUserResize="False" 
-                            Width="30" 
-                            CanUserSort="False"                                      
-                            IsReadOnly="True"/>
-                        <DataGridTextColumn 
-                            Binding="{Binding Path=DBPath}" 
-                            ClipboardContentBinding="{x:Null}" 
-                            Header="Путь к базе данных" 
-                            CanUserResize="False" 
-                            Width="Auto" 
-                            CanUserSort="False" 
-                            IsReadOnly="True"/>
-                    </DataGrid.Columns>
+                        <DataGrid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=BDRounded}"/>
+                        </DataGrid.OpacityMask>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn 
+                                Binding="{Binding Path=Number}" 
+                                ClipboardContentBinding="{x:Null}" 
+                                Header="№" 
+                                CanUserResize="False" 
+                                Width="30" 
+                                CanUserSort="False"                                      
+                                IsReadOnly="True"/>
+                            <DataGridTextColumn 
+                                Binding="{Binding Path=DBPath}" 
+                                ClipboardContentBinding="{x:Null}" 
+                                Header="Путь к базе данных" 
+                                CanUserResize="False" 
+                                Width="Auto" 
+                                CanUserSort="False" 
+                                IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
 
-                </DataGrid>
-            </Grid>
-        </Border>
 
-        <Button
-        	x:Name="btnNameSpaceAdd"        
-        	VerticalAlignment="Bottom"               
-        	Click="btnNameSpaceAdd_Click" 
-            Margin="21.65,0,0,206.9" Content="Добавить" HorizontalAlignment="Left" />
-        <Button
-        	x:Name="btnNameSpaceDelete"        
-        	VerticalAlignment="Bottom" 
-        	    
-        	Click="btnNameSpaceDelete_Click" Margin="112.65,0,68.397,206.9" Content="Удалить"/>
-        <Border 
-            x:Name="Border_dgvNameSpace"
-            BorderThickness="2" 
-            BorderBrush="{StaticResource isHighlightedColor}"            
-            CornerRadius="15" 
-            Width="590"  
-            Height="150" 
-            Grid.ColumnSpan="3" 
-            Margin="21.65,351,272.35,0" 
-            VerticalAlignment="Top" >
-            <!--Border.BitmapEffect>
+            <DockPanel 
+                Grid.Row="4"
+                VerticalAlignment="Stretch" 
+                Height="Auto"
+                Margin="20,20,10,0">
+                <DockPanel 
+                    HorizontalAlignment="Stretch" 
+                    VerticalAlignment="Stretch" 
+                    Height="Auto">
+                    <DockPanel 
+                        DockPanel.Dock="Left" 
+                        VerticalAlignment="Stretch" 
+                        Height="Auto">
+                        <CheckBox 
+                            x:Name="cbIsPackage" 
+                            Content="Пакет" 
+                            Width="50"             
+                            VerticalAlignment="Center"        
+                            Checked="cbIsPackage_CheckedChanged" 
+                            Unchecked="cbIsPackage_CheckedChanged" />
+                    </DockPanel>
+
+                    <DockPanel 
+                        DockPanel.Dock="Right" 
+                        VerticalAlignment="Stretch" 
+                        Height="Auto">
+                        <Button
+                	        x:Name="btnChooseNSPath"                   
+                	        Click="btnChooseNSPath_Click"                      
+                	        Content="Выбрать" 
+                	        Visibility="Hidden"/>
+                    </DockPanel>
+
+                    <StackPanel 
+                        DockPanel.Dock="Left" 
+                        Width="Auto" 
+                        Margin="10,0,10,0"
+                        HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Center" 
+                        Orientation="Vertical">
+
+                        <TextBox 
+        	                x:Name="tbNSPath"                 	
+                            HorizontalAlignment="Stretch"           
+                            VerticalAlignment="Stretch" 
+                            Visibility="Hidden"        
+                    />
+                    </StackPanel>
+                </DockPanel>
+            </DockPanel>
+
+            <StackPanel      
+                Grid.Row="5"   
+                Margin="20,10,0,5">
+                <Button
+        	        x:Name="btnNameSpaceAdd"                        
+        	        Click="btnNameSpaceAdd_Click" 
+                    Content="Добавить" 
+                    HorizontalAlignment="Left"
+                    Margin="0,0,10,0"/>
+                <Button
+        	        x:Name="btnNameSpaceDelete"        
+        	        Click="btnNameSpaceDelete_Click"
+                    Content="Удалить"/>
+            </StackPanel>
+            <Border                     
+                x:Name="Border_dgvNameSpace"           
+                Grid.Row="6"
+                BorderThickness="2" 
+                BorderBrush="{StaticResource isHighlightedColor}"            
+                CornerRadius="15" 
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Width="auto"  
+                Height="150" 
+                Margin="20,0,10,0"                
+            >
+                <!--.BitmapEffect>
                 <DropShadowBitmapEffect Color="#FF343436"/>
             </Border.BitmapEffect-->
-            <Grid>
-                <Border                     
+                <Grid>
+                    <Border                     
                     x:Name="BDRounded2"                                      
                     Background="Black"                     
                     CornerRadius="15"        
                     >
-                </Border>
-                <DataGrid 
+                    </Border>
+                    <DataGrid 
                     x:Name="dgvNameSpace" 
                     ItemsSource="{Binding dgNameSpaceItemsSource}"   
                     BorderBrush="{x:Null}" 
@@ -182,11 +279,11 @@
                     HorizontalGridLinesBrush="{x:Null}"
                     GridLinesVisibility="None"                    
                     >
-                    <DataGrid.OpacityMask>
-                        <VisualBrush Visual="{Binding ElementName=BDRounded2}"/>
-                    </DataGrid.OpacityMask>
-                    <DataGrid.Columns>
-                        <DataGridTextColumn 
+                        <DataGrid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=BDRounded2}"/>
+                        </DataGrid.OpacityMask>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn 
                             Binding="{Binding Path=Number}" 
                             ClipboardContentBinding="{x:Null}" 
                             Header="№" 
@@ -194,7 +291,7 @@
                             Width="30" 
                             CanUserSort="False"                     
                             IsReadOnly="True"/>
-                        <DataGridTextColumn 
+                            <DataGridTextColumn 
                             Binding="{Binding Path=NSPath}" 
                             ClipboardContentBinding="{x:Null}" 
                             Header="NameSpacePath" 
@@ -203,7 +300,7 @@
                             CanUserSort="False" 
                             IsReadOnly="True"
                             Visibility="Collapsed"/>
-                        <DataGridTextColumn 
+                            <DataGridTextColumn 
                             Binding="{Binding Path=NSFileName}" 
                             ClipboardContentBinding="{x:Null}" 
                             Header="Имя файла ПИ" 
@@ -211,38 +308,14 @@
                             Width="Auto" 
                             CanUserSort="False" 
                             IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-        </Border>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
 
+        </Grid>
 
-        <Button
-        	x:Name="btnChooseNSPath"        
-        	VerticalAlignment="Bottom"              
-        	Click="btnChooseNSPath_Click" 
-            Margin="249.838,0,272.35,243.4" 
-            Content="Выбрать" 
-            Visibility="Visible"            
-            Grid.Column="2"/>
-        <TextBox 
-        	x:Name="tbNSPath" 
-        	Margin="83.65,0,-244.838,243.4" 
-        	Width="443" 
-            HorizontalAlignment="Left"           
-            VerticalAlignment="Bottom" Visibility="Visible" 
-            Grid.ColumnSpan="2"/>
-        <CheckBox 
-            x:Name="cbIsPackage" 
-            Content="Пакет" 
-            HorizontalAlignment="Left" 
-            VerticalAlignment="Bottom" 
-            Margin="21.65,0,0,246.42" 
-            Checked="cbIsPackage_CheckedChanged" 
-            Unchecked="cbIsPackage_CheckedChanged"/>
     </Grid>
-
-
 
     <Window.Resources>
 
@@ -250,10 +323,16 @@
             <Setter Property="Height" Value="22"/>
             <Setter Property="Width" Value="80"/>
             <Setter Property="Opacity" Value="0.6"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style TargetType="{x:Type StackPanel}">
+            <Setter Property="Orientation" Value="Horizontal"/>
         </Style>
 
 
-        <!-- Style for Scroll of DataGrid-->
+        <!-- Style for Scroll of DataGrid -->
         <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
             <Setter Property="Template">
                 <Setter.Value>

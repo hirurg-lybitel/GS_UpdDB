@@ -19,9 +19,11 @@ namespace GS_UpdDB
     /// </summary>
     public partial class AboutProgram : Window
     {
-        public AboutProgram()
+        public AboutProgram(MainWindow mWind)
         {
             InitializeComponent();
+
+            lbVersion.Content = mWind.CurrentApplicationVersion();
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e)

@@ -18,12 +18,9 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="32*"/>
-                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
@@ -32,19 +29,25 @@
                 Grid.Row="0" 
                 Source="Icons\Gedemin.ico"
                 Stretch="Uniform"
-                VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="10,0,10,-42.12" Grid.RowSpan="4">
+                VerticalAlignment="Top" 
+                Margin="10,0,10,10" >
             </Image>
             <Label  
-                Grid.Row="3" 
+                Grid.Row="1" 
                 Grid.Column="0"                      
                 FontWeight="Bold"
-                Margin="10,0,0,-68.08"
-                VerticalAlignment="Bottom" Padding="0" Grid.ColumnSpan="2" Height="15.96"
+                Margin="10,0,0,10"
+                VerticalAlignment="Bottom" 
+                Padding="0"  
+                Height="15.96"
             >
                 © Golden Software of Belarus, Ltd
             </Label>
-            <Label Grid.Row="3" Margin="10,0,0,-84.04" Padding="0" Grid.ColumnSpan="2" Height="15.96" VerticalAlignment="Bottom">http://gsbelarus.com</Label>
-            <Label Grid.Row="3" Margin="10,0,0,-100" Padding="0" Grid.ColumnSpan="2" Height="15.96" VerticalAlignment="Bottom">email: support@gsbelarus.com</Label>
+            <Label Grid.Row="1" Margin="10,0,0,-5" Padding="0" Height="15.96" VerticalAlignment="Bottom">http://gsbelarus.com</Label>
+            <Label Grid.Row="1" Margin="10,0,0,-20" Padding="0" Height="15.96" VerticalAlignment="Bottom">email: support@gsbelarus.com</Label>
+
+            <Label Grid.Row="1" Margin="10,0,0,-35" Padding="0" Height="15.96" VerticalAlignment="Bottom" HorizontalAlignment="Left">Версия:</Label>
+            <Label x:Name="lbVersion" Grid.Row="1" Margin="60,0,0,-35" Padding="0" Height="15.96" VerticalAlignment="Bottom"  HorizontalAlignment="Left">Версия:</Label>
         </Grid>
 
         <Grid Grid.Column="1">
