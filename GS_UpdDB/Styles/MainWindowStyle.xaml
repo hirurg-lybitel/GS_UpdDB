@@ -1,9 +1,11 @@
 <ResourceDictionary 
     x:Class="GS_UpdDB.Styles.MainWindowStyle"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:extensions="clr-namespace:GS_UpdDB">
 
     <SolidColorBrush x:Key="MainWindowBorderBrush" Color="#007ACC" />
+    <SolidColorBrush x:Key="MainWindowBorderBrushNotActive" Color="#FF2E2E36" />
     <SolidColorBrush x:Key="MainFontColor" Color="DarkGray" />
     <SolidColorBrush x:Key="isHighlightedColor" Color="#FF343436" />
 
@@ -34,7 +36,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="MainWindowBackground" TargetType="{x:Type Grid}">
+    <!--Style x:Key="MainWindowBackground" TargetType="{x:Type Grid}">
         <Setter Property="Background" >
             <Setter.Value>
                 <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
@@ -52,7 +54,14 @@
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style-->
+
+    <SolidColorBrush x:Key="MainWindowBackgroundColor" Color="#FF101011" />
+    <Style x:Key="MainWindowBackground" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="{StaticResource MainWindowBackgroundColor}" />
+    </Style>    
+
+
 
     <Style x:Key="MainWindowStyle" TargetType="{x:Type Window}">
         <Setter Property="WindowStyle" Value="None" />
@@ -133,6 +142,26 @@
                                                 Text="{Binding Path=Title, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
                                             />
                                             <Button
+                                            x:Name="MinButton"
+                                            Grid.Column="3"
+                                            VerticalAlignment="Top"
+                                            Width="34"
+                                            Height="26"
+                                            Style="{StaticResource MainWindowStyleTitleBarButton}"
+                                            Click="MinButtonClick"
+                                            WindowChrome.IsHitTestVisibleInChrome="True"
+                                            >
+                                                <Grid MaxHeight="9" MaxWidth="9">
+                                                    <Path
+                                                    Stroke="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
+                                                    StrokeThickness="1"
+                                                    Stretch="None"
+                                                    RenderOptions.EdgeMode="Aliased"
+                                                    Data="M0,8 H8 M0,7 H8 M0,6 H8"
+                                                    />
+                                                </Grid>
+                                            </Button>
+                                            <Button
                                                 Grid.Column="4"
                                                 x:Name="CloseButton" 
                                                 VerticalAlignment="Top"
@@ -159,23 +188,26 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="extensions:MainWindow.HideComponent" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="MinButton"/>
+                        </Trigger>
                         <Trigger Property="Icon" Value="{x:Null}">
                             <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
                         </Trigger>
                         <Trigger Property="WindowState" Value="Normal">
-                            <Setter TargetName="PART_Border" Property="Effect">
+                            <!--Setter TargetName="PART_Border" Property="Effect">
                                 <Setter.Value>
                                     <DropShadowEffect
-                                        Color="black"
+                                        Color="white"
                                         Opacity="0.5"
                                         BlurRadius="7"
                                         ShadowDepth="2"
                                         Direction="315"/>
                                 </Setter.Value>
-                            </Setter>
-                        </Trigger>
+                            </Setter-->
+                        </Trigger> 
                         <Trigger Property="IsActive" Value="False">
-                            <Setter TargetName="PART_Border" Property="BorderBrush" Value="Transparent"/>
+                            <Setter TargetName="PART_Border" Property="BorderBrush" Value="{StaticResource MainWindowBorderBrushNotActive}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -183,16 +215,19 @@
         </Setter>
 
         <Style.Resources>
-            <!--Style TargetType="{x:Type StatusBar}">
-                <Setter Property="Foreground" Value="{StaticResource MainWindowStatusForeground}" />
+            <Style TargetType="{x:Type StatusBar}">
+                <Setter Property="Foreground" Value="White" />
                 <Setter Property="Background" Value="{StaticResource MainWindowBorderBrush}" />
-                <Style.Triggers>
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Setter Property="VerticalAlignment" Value="Bottom"/>
+                <!--<Style.Triggers>
                     <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                        <Setter Property="Foreground" Value="{StaticResource MainWindowStatusForegroundInactive}" />
-                        <Setter Property="Background" Value="{StaticResource MainWindowBorderBrushInactive}" />
+                        <Setter Property="Foreground" Value="{StaticResource VS2012WindowStatusForegroundInactive}" />
+                        <Setter Property="Background" Value="{StaticResource VS2012WindowBorderBrushInactive}" />
                     </DataTrigger>
-                </Style.Triggers>
-            </Style-->
+                </Style.Triggers>-->
+            </Style>
+            
             <!--Style TargetType="{x:Type ResizeGrip}">
                 <Setter Property="WindowChrome.ResizeGripDirection" Value="BottomRight" />
             </Style-->
@@ -298,9 +333,10 @@
                                 <Trigger Property="IsHighlighted" Value="true">
                                     <Setter Property="Background" Value="{StaticResource isHighlightedColor}" TargetName="Border"/>
                                     <Setter Property="TextBox.Foreground" Value="White" TargetName="Border"/>
-                                </Trigger>
+                                </Trigger> 
                                 <Trigger Property="IsHighlighted" Value="false">
-                                    <Setter Property="Background" Value="Black" TargetName="Border"/>
+                                    <Setter Property="Background" Value="{StaticResource MainWindowBackgroundColor}" TargetName="Border"/>
+                                    <!--Setter Property="Background" Value="Black" TargetName="Border"/-->
                                 </Trigger>
                                 <Trigger Property="Icon" Value="{x:Null}">
                                     <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>

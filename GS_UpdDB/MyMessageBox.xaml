@@ -1,0 +1,169 @@
+﻿<Window x:Class="GS_UpdDB.MyMessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:extensions="clr-namespace:GS_UpdDB"
+        xmlns:local="clr-namespace:GS_UpdDB"
+        mc:Ignorable="d"
+        Title="Внимание" 
+        Height="150" 
+        Width="300"
+        Background="#FFAC3333"
+        WindowStartupLocation="CenterScreen"         
+        Style="{DynamicResource MyMessageBoxStyle}">
+    <Grid Background="#FF1A1A1D">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock 
+                Grid.Row="0" 
+                x:Name="tbMessage"
+                Style="{DynamicResource MessageStyle}"/>
+
+
+            <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition x:Name="btnCancelColumn"/>
+                </Grid.ColumnDefinitions>
+
+                <DockPanel Grid.Column="0">
+                    <Border Grid.Column="0" BorderThickness="0,1,0,0" BorderBrush="{StaticResource MainFontColor}">
+                        <Button x:Name="btnOk" Content="Да" Click="btnOk_Click"/>
+                    </Border>
+                </DockPanel>
+
+                <DockPanel Grid.Column="1" Visibility="Visible">
+                    <Border BorderThickness="1,1,0,0" BorderBrush="{StaticResource MainFontColor}">
+                        <Button Content="Нет" Click="btnCancel_Click" />
+                    </Border>
+                </DockPanel>
+
+
+
+            </Grid>
+        </Grid>
+
+
+    </Grid>
+    <Window.Resources>
+
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource MainFontColor}"/>
+            <Setter Property="Height" Value="30"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" >
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource isHighlightedColor}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+        <Style x:Key="MessageStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource MainFontColor}"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+
+        <SolidColorBrush x:Key="TitlteLineColor" Color="#FF33B5E5" />
+        <Style x:Key="MyMessageBoxStyle" TargetType="{x:Type Window}">
+            <Setter Property="WindowStyle" Value="None" />
+            <Setter Property="AllowsTransparency" Value="true" />
+            <Setter Property="ResizeMode" Value="NoResize" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Window}">
+                        <Border
+                        x:Name="PART_Container"
+                        Padding="7 7 7 5"                        
+                        >
+                            <Grid    
+                            TextOptions.TextRenderingMode="ClearType"
+                            TextOptions.TextFormattingMode="Display"                                  
+                            Background="#FF1A1A1D">
+                                <Border
+                                x:Name="PART_Border"
+                                Width="Auto"
+                                Height="Auto"                                    
+                                          BorderBrush="White"
+                                BorderThickness="0"                                   
+                                Padding="0">
+                                    <DockPanel
+                                    HorizontalAlignment="Stretch"
+                                    Background="Transparent"
+                                    VerticalAlignment="Stretch"                                               
+                                >
+                                        <Border
+                                        x:Name="TitleBar"
+                                        DockPanel.Dock="Top"
+                                        Background="Transparent"
+                                        BorderThickness="0,0,0,1"
+                                            BorderBrush="{StaticResource TitlteLineColor}"
+                                    >
+                                            <Grid Height="32">
+                                                <TextBlock
+                                                x:Name="Caption"                                                            
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Center"     
+                                                TextAlignment="Center"                                                                         
+                                                FontFamily="Segoe UI"
+                                                FontSize="15"      
+                                                FontWeight="Bold"
+                                                Foreground="{StaticResource TitlteLineColor}"
+                                                Text="{Binding Path=Title, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                            />
+                                            </Grid>
+                                        </Border>
+
+                                        <ContentPresenter/>
+
+                                    </DockPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="WindowState" Value="Normal">
+                                <Setter TargetName="PART_Container" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect
+                                        Color="DarkGray"
+                                        Opacity="0.5"
+                                        BlurRadius="7"
+                                        ShadowDepth="0"
+                                        Direction="315"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <!--Trigger Property="IsActive" Value="False">
+                                <Setter TargetName="PART_Border" Property="BorderBrush" Value="Transparent"/>
+                            </Trigger-->
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+</Window>

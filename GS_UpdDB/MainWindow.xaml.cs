@@ -34,7 +34,36 @@ using System.Globalization;
 
 namespace GS_UpdDB
 {
-    public partial class MainWindow : Window {       
+    public partial class MainWindow : Window {
+
+        /******************Пользовательские свойсва компонентов******************/
+
+        public static readonly DependencyProperty CustomValueProperty = DependencyProperty.RegisterAttached(
+            "HideComponent", typeof(Boolean), typeof(MainWindow), new PropertyMetadata(false));
+
+        public static void SetHideComponent(DependencyObject element, Boolean value)
+        {
+            element.SetValue(CustomValueProperty, value);
+        }
+
+        public static Boolean GetHideComponent(DependencyObject element)
+        {
+            return (bool)element.GetValue(CustomValueProperty);
+        }
+
+        public Boolean HideComponent
+        {
+            get
+            {
+                return (Boolean)GetValue(CustomValueProperty);
+            }
+            set
+            {
+                SetValue(CustomValueProperty, value);
+            }
+        }
+
+        /************************************************************************/
 
         private class m_DataBase
         {
@@ -51,6 +80,7 @@ namespace GS_UpdDB
 
         /*******************************Переменные*******************************/
         DWORD result;
+        MyMessageBox mes;
 
         private OpenFileDialog ofdGedeminPath;
         private OpenFileDialog ofdNameSpace;
@@ -134,7 +164,7 @@ namespace GS_UpdDB
             {
                 Source = dgDataBaseItemsSource
             });
-
+            
         }
 
 
@@ -308,7 +338,7 @@ namespace GS_UpdDB
             }
             IsInProcess = false;
 
-            AddToEventLog("Обновление завершено", false, false);
+            AddToEventLog("Обновление завершено", false, true);
 
         }
 
@@ -354,7 +384,8 @@ namespace GS_UpdDB
             sw.Close();
 
             if (withMsgBox)
-                MessageBox.Show(str);
+                (new MyMessageBox(str, MessageBoxButton.OK)).ShowDialog();
+
         }
 
         private IEnumerable<System.Windows.Controls.DataGridRow> GetDataGridRows(System.Windows.Controls.DataGrid grid)
@@ -421,8 +452,42 @@ namespace GS_UpdDB
             return false;
         }
 
-        private bool DownloadFile(String url, String FileName) {
+        private  void DownloadProgress(object sender, DownloadProgressChangedEventArgs e)
+        {
+            // Displays the operation identifier, and the transfer progress.
 
+            //String s = String.Format("{0}    downloaded {1} of {2} bytes. {3} % complete...",
+            //    (string)e.UserState,
+            //    e.BytesReceived,
+            //    e.TotalBytesToReceive,
+            //    e.ProgressPercentage);
+
+            //AddToEventLog(s, false, false);
+
+       //     Thread.Sleep(300);
+
+            AddStatus(String.Format("Скачано {0} байт", e.BytesReceived));        
+        }
+
+        private void DownloadCompleted(object sender, AsyncCompletedEventArgs e) {
+
+            Thread.Sleep(300);            
+
+            String mes = "Скачивание завершено";
+
+            Exception err = e.Error;
+            if (err != null) {
+                mes = err.Message;
+
+                Exception ierr = err.InnerException;
+                if (ierr != null) mes = mes + "\n" +  ierr.Message;
+            }
+
+            AddStatus(mes); 
+            // (new MyMessageBox("Скачивание завершено", MessageBoxButton.OK)).ShowDialog();
+        }
+
+        private void DownloadThreadFunction(String url, String FileName) {
             AddToEventLog("Скачивание файла " + FileName, false, false);
 
             try
@@ -430,18 +495,34 @@ namespace GS_UpdDB
                 using (var client = new WebClient())
                 {
 
-                    client.DownloadFile(new Uri(url), FileName);
+                    // client.DownloadFile(new Uri(url), FileName);
+
+                    client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgress);
+                    client.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadCompleted);
+
+                    
+                    client.DownloadFileAsync(new Uri(url), FileName);
 
                     AddToEventLog("Скачивание файла завершено.", false, false);
-                    return true;
+                    return ;
                 }
             }
-            catch
+            catch (Exception error)
             {
-                AddToEventLog("Не удалось скачать файл.\n" + GetLastErrorDescription(), true, true);
-                return false;
+                AddToEventLog("Не удалось скачать файл.\n" + error, true, false);
+                AddStatus("Не удалось скачать файл");
+                return ;
             }
-            
+        }
+
+        private void DownloadFile(String url, String FileName) {
+
+            Thread DownloadThread = new Thread(() => DownloadThreadFunction(url, FileName));
+            //DownloadThread.IsBackground = true;
+            DownloadThread.Start();
+
+            DownloadThread.Join();
+
         }
 
         private void CheckUpdates(bool isSilent) {
@@ -453,10 +534,10 @@ namespace GS_UpdDB
                 Version versionCurrentFile  = new Version(CurrentApplicationVersion());
 
                 if (versionNewFile > versionCurrentFile) {
-                    AddToEventLog("Доступна новая версия программы.", false, false);
-                    MessageBoxResult res = MessageBox.Show("Доступна новая версия программы.\nОбновить сейчас", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    AddToEventLog("Доступна новая версия программы.", false, false);                    
 
-                    if (res == MessageBoxResult.OK)
+                    mes = new MyMessageBox("Доступна новая версия программы.\nОбновить сейчас?");
+                    if (mes.ShowDialog() == true)
                     {
                         DownloadFile("", g_UpdaterFileName);
                         if (!(File.Exists(g_NewFileName))) return;
@@ -472,7 +553,7 @@ namespace GS_UpdDB
             }
             catch
             {
-                AddToEventLog("Ошибка обновления программы. " + GetLastErrorDescription(), true, true);
+                AddToEventLog("Ошибка обновления программы.", true, isSilent);
                 if (File.Exists(g_NewFileName))  File.Delete(g_NewFileName); 
                 if (File.Exists(g_UpdaterFileName)) File.Delete(g_UpdaterFileName);
             }           
@@ -495,6 +576,22 @@ namespace GS_UpdDB
                 AddToEventLog("Ошибка удаления файла " + g_UpdaterFileName + "\n" + err, true, false);
             }
         }
+
+        private void AddStatus(String str) {
+
+          //  sbStatus.Visibility = Visibility.Collapsed;
+            Dispatcher.BeginInvoke((Action)(() => this.sbStatus.Visibility = Visibility.Collapsed));
+
+            if (str == String.Empty) return;
+
+           // sbStatus.Visibility = Visibility.Visible;
+            Dispatcher.BeginInvoke((Action)(() => this.sbStatus.Visibility = Visibility.Visible));
+
+
+           // tbStatus.Text = str;
+            Dispatcher.BeginInvoke((Action)(() => this.tbStatus.Text = str));
+
+        }
         /************************************************************************/
 
 
@@ -514,8 +611,8 @@ namespace GS_UpdDB
 
             if (!(this.isApplicationExitCall))
             {
-                MessageBoxResult res = MessageBox.Show("Вы точно хотите выйти?", "Внимание!", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (res == MessageBoxResult.Yes)
+                mes = new MyMessageBox("Вы точно хотите выйти?");                
+                if (mes.ShowDialog() == true)
                 {
                     isApplicationExitCall = true;
                     Application.Current.Shutdown();
@@ -619,10 +716,10 @@ namespace GS_UpdDB
         private void btnExite_Click(object sender, EventArgs e){
             if (CheckProcess()) return;
 
-            MessageBoxResult res = MessageBox.Show("Вы точно хотите выйти?", "Внимание!", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
+            mes = new MyMessageBox("Вы точно хотите выйти?");
+ 
             isApplicationExitCall = true;
-            if (res == MessageBoxResult.Yes)
+            if (mes.ShowDialog() == true)
                 Application.Current.Shutdown();
         }
 
@@ -861,7 +958,9 @@ namespace GS_UpdDB
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e) {
 
-            if (!(DownloadFile(g_urlNewFile, g_NewFileName))) return;
+            DownloadFile(g_urlNewFile, g_NewFileName);          
+
+            return;
 
             CheckUpdates(true);
 
@@ -1029,4 +1128,5 @@ namespace GS_UpdDB
 
         /************************************************************************/
     }
+
 }

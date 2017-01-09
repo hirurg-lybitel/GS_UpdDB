@@ -9,10 +9,12 @@
         Height="380" 
         Width="684"
         ResizeMode="NoResize"
-        WindowStartupLocation="CenterOwner" 
+        WindowStartupLocation="CenterScreen" 
         Closing="Window_Closing"
         Visibility="Visible"
-        Style="{StaticResource MainWindowStyle}">
+        Style="{StaticResource MainWindowStyle}"
+        extensions:MainWindow.HideComponent ="True"
+        xmlns:extensions="clr-namespace:GS_UpdDB">
 
     <Window.Resources>
         <Thickness  x:Key="TextBoxMargin" Left="5" Right="5" Top="0" Bottom="7" />

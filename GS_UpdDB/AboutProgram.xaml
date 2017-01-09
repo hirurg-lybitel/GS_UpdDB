@@ -8,8 +8,10 @@
         Title="О программе" 
         Height="400" 
         Width="700"
-        WindowStartupLocation="CenterOwner" 
-        Style="{StaticResource MainWindowStyle}">
+        WindowStartupLocation="CenterScreen" 
+        Style="{StaticResource MainWindowStyle}"
+        extensions:MainWindow.HideComponent ="True"
+        xmlns:extensions="clr-namespace:GS_UpdDB">
 
     <Grid>
         <Grid.ColumnDefinitions>
