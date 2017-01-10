@@ -43,9 +43,6 @@
                         <Button Content="Нет" Click="btnCancel_Click" />
                     </Border>
                 </DockPanel>
-
-
-
             </Grid>
         </Grid>
 

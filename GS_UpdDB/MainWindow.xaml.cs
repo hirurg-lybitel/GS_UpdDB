@@ -79,7 +79,14 @@ namespace GS_UpdDB
             public String NSFileName { get; set; }
         }
 
+        private struct ForBackgroundWorker {
+            public String url;
+            public String FileName;
+        }
+
         /*******************************Переменные*******************************/
+        private BackgroundWorker bgWorker;
+
         DWORD result;
         MyMessageBox mes;
 
@@ -110,20 +117,20 @@ namespace GS_UpdDB
         private bool isApplicationExitCall = false;
         private bool IsInProcess;
 
-        private const String g_urlNewFile = "https://github.com/hirurg-lybitel/GS_UpdDB/blob/master/GS_UpdDB/bin/Release/GS_UpdDB.exe";
+        private const String g_urlNewFile = "https://github.com/hirurg-lybitel/GS_UpdDB/releases/download/Master/GS_UpdDB.exe";
         private const String g_NewFileName = "GS_UpdDB.update";
         
-        private const String g_urlUpdater = "https://github.com/hirurg-lybitel/Updater/blob/master/Updater/bin/Release/Updater.exe";
-        private const String g_UpdaterFileName= "updater.exe";
+        private const String g_urlUpdater = "https://github.com/hirurg-lybitel/Updater/releases/download/master/Updater.exe";
+        private const String g_UpdaterFileName= "Updater.exe";
 
-        /************************************************************************/
+        /************************************************************************/        
 
         public MainWindow() {
             InitializeComponent();
 
             InitializeGlobalVariables();
 
-            Application.Current.MainWindow.Closing += new CancelEventHandler(MainWin_Closing);
+            Application.Current.MainWindow.Closing += new CancelEventHandler(MainWin_Closing);        
         }
 
         private void InitializeGlobalVariables() {
@@ -165,7 +172,11 @@ namespace GS_UpdDB
             {
                 Source = dgDataBaseItemsSource
             });
-            
+
+
+            bgWorker = new BackgroundWorker();
+            bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
+
         }
 
 
@@ -315,9 +326,6 @@ namespace GS_UpdDB
 
         private void MyThread(String sCmdLine)
         {
-            //Dispatcher.BeginInvoke((Action)(() => this.tbGedeminPath.Text = sGedeminPath));
-            //Dispatcher.BeginInvoke((Action)(() => this.tbGedeminPath.Background = Brushes.PaleGreen));
-
             Process cmd = new Process();
             cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cmd.StartInfo.CreateNoWindow = true;
@@ -339,7 +347,8 @@ namespace GS_UpdDB
             }
             IsInProcess = false;
 
-            AddToEventLog("Обновление завершено", false, true);
+            AddToEventLog("Обновление завершено", false, false);
+            Dispatcher.BeginInvoke((Action)(() => (new MyMessageBox("Обновление завершено", MessageBoxButton.OK)).ShowDialog()));
 
         }
 
@@ -378,7 +387,7 @@ namespace GS_UpdDB
 
             if (sLogPath == String.Empty) sLogPath = sCurrentDir + "\\log.txt";
 
-            if (!File.Exists(sLogPath)) File.CreateText(sLogPath);
+            if (!File.Exists(sLogPath)) File.Create(sLogPath).Close(); 
 
             StreamWriter sw = File.AppendText(sLogPath);
             sw.WriteLine(DateTime.Now.ToString() + " : " + str + ";");
@@ -455,19 +464,15 @@ namespace GS_UpdDB
 
         private  void DownloadProgress(object sender, DownloadProgressChangedEventArgs e)
         {
-            // Displays the operation identifier, and the transfer progress.
+            String s = String.Format("Cкачано {0} из {1} байт. {2} % завершено...",          
+                e.BytesReceived,
+                e.TotalBytesToReceive,
+                e.ProgressPercentage);
 
-            //String s = String.Format("{0}    downloaded {1} of {2} bytes. {3} % complete...",
-            //    (string)e.UserState,
-            //    e.BytesReceived,
-            //    e.TotalBytesToReceive,
-            //    e.ProgressPercentage);
+            AddStatus(s);        
 
-            //AddToEventLog(s, false, false);
-
-       //     Thread.Sleep(300);
-
-            AddStatus(String.Format("Скачано {0} байт", e.BytesReceived));        
+            if (e.TotalBytesToReceive > 0 && e.BytesReceived == e.TotalBytesToReceive)
+                AddStatus("Скачивание завершено");
         }
 
         private void DownloadCompleted(object sender, AsyncCompletedEventArgs e) {
@@ -484,8 +489,8 @@ namespace GS_UpdDB
                 if (ierr != null) mes = mes + "\n" +  ierr.Message;
             }
 
-            AddStatus(mes); 
-            // (new MyMessageBox("Скачивание завершено", MessageBoxButton.OK)).ShowDialog();
+            AddStatus(mes);
+            AddToEventLog(mes, false, false);      
         }
 
         private void DownloadThreadFunction(String url, String FileName) {
@@ -493,41 +498,40 @@ namespace GS_UpdDB
 
             try
             {
+                /*Проверяем интернет соединение*/
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Timeout = 5000;
+                request.Credentials = CredentialCache.DefaultNetworkCredentials;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                if (response.StatusCode != HttpStatusCode.OK) throw new Exception("Невозможно подключиться к сети Интернет");
+
                 using (var client = new WebClient())
-                {
-
-                    // client.DownloadFile(new Uri(url), FileName);
-
+                {                
                     client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgress);
-                    client.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadCompleted);
-
-                    
+                    client.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadCompleted);                    
                     client.DownloadFileAsync(new Uri(url), FileName);
 
-                    AddToEventLog("Скачивание файла завершено.", false, false);
+                    while (client.IsBusy) ;
+
                     return ;
                 }
             }
             catch (Exception error)
             {
                 AddToEventLog("Не удалось скачать файл.\n" + error, true, false);
-                AddStatus("Не удалось скачать файл");
-                return ;
+                AddStatus("Не удалось скачать файл " + FileName + "      см. подробности в логе");
             }
         }
 
         private void DownloadFile(String url, String FileName) {
 
             Thread DownloadThread = new Thread(() => DownloadThreadFunction(url, FileName));
-            //DownloadThread.IsBackground = true;
+            DownloadThread.IsBackground = true;
             DownloadThread.Start();
-
-            DownloadThread.Join();
-
         }
 
         private void CheckUpdates(bool isSilent) {
-
+           
             if (!(File.Exists(g_NewFileName))) return;
 
             try {
@@ -540,23 +544,27 @@ namespace GS_UpdDB
                     mes = new MyMessageBox("Доступна новая версия программы.\nОбновить сейчас?");
                     if (mes.ShowDialog() == true)
                     {
-                        DownloadFile("", g_UpdaterFileName);
-                        if (!(File.Exists(g_NewFileName))) return;
+                        bgWorker.RunWorkerAsync(new ForBackgroundWorker() { url = g_urlUpdater, FileName = g_UpdaterFileName});
+                        bgWorker_Wait();
 
-                        Process.Start(g_UpdaterFileName, g_NewFileName + " \"" + Process.GetCurrentProcess().ProcessName + "\"");
-                        Process.GetCurrentProcess().CloseMainWindow();
+                        if (!(File.Exists(g_NewFileName))) return;
+                        if (!(File.Exists(g_UpdaterFileName))) return;
+
+                        Process.Start(g_UpdaterFileName, g_NewFileName + " \"" + AppDomain.CurrentDomain.FriendlyName + "\"");
+                        //Process.GetCurrentProcess().CloseMainWindow();
                     }
                 }
                 if (versionNewFile == versionCurrentFile) {
-                    AddToEventLog("У вас установлена самая последняя весрия.", false, isSilent);
+                    AddToEventLog("У вас установлена последняя весрия.", false, isSilent);
+                    File.Delete(g_NewFileName);
                     return;
                 }
             }
             catch
             {
                 AddToEventLog("Ошибка обновления программы.", true, isSilent);
-                if (File.Exists(g_NewFileName))  File.Delete(g_NewFileName); 
-                if (File.Exists(g_UpdaterFileName)) File.Delete(g_UpdaterFileName);
+                //if (File.Exists(g_NewFileName)) File.Delete(g_NewFileName); 
+                //if (File.Exists(g_UpdaterFileName)) File.Delete(g_UpdaterFileName);
             }           
         }
 
@@ -578,20 +586,42 @@ namespace GS_UpdDB
             }
         }
 
+        private void DeleteUpdateFile()
+        {
+            if (!(File.Exists(g_NewFileName))) return;
+            try
+            {
+                File.Delete(g_NewFileName);
+            }
+            catch (Exception err)
+            {
+                AddToEventLog("Ошибка удаления файла " + g_NewFileName + "\n" + err, true, false);
+            }
+        }
+
         private void AddStatus(String str) {
 
-          //  sbStatus.Visibility = Visibility.Collapsed;
             Dispatcher.BeginInvoke((Action)(() => this.sbStatus.Visibility = Visibility.Collapsed));
 
             if (str == String.Empty) return;
 
-           // sbStatus.Visibility = Visibility.Visible;
             Dispatcher.BeginInvoke((Action)(() => this.sbStatus.Visibility = Visibility.Visible));
-
-
-           // tbStatus.Text = str;
             Dispatcher.BeginInvoke((Action)(() => this.tbStatus.Text = str));
 
+        }
+
+        private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            ForBackgroundWorker fbgw = (ForBackgroundWorker)e.Argument;
+            DownloadFile(fbgw.url, fbgw.FileName);
+
+        }
+
+        private void bgWorker_Wait() {
+            while (bgWorker.IsBusy)
+            {
+                m_Forms.Application.DoEvents();
+            }
         }
         /************************************************************************/
 
@@ -626,6 +656,8 @@ namespace GS_UpdDB
         private void MainWin_Loaded(object sender, RoutedEventArgs e){      
 
             DeleteUpdater();
+
+            DeleteUpdateFile();
 
             sCurrentDir = Directory.GetCurrentDirectory();
 
@@ -959,13 +991,17 @@ namespace GS_UpdDB
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e) {
 
-            DownloadFile(g_urlNewFile, g_NewFileName);          
+            if (CheckProcess()) return;
 
-            return;
+            btnUpdate.IsEnabled = false;
+
+            bgWorker.RunWorkerAsync(new ForBackgroundWorker() { url = g_urlNewFile, FileName = g_NewFileName });
+            bgWorker_Wait();
 
             CheckUpdates(true);
 
-            DeleteUpdater();
+
+            btnUpdate.IsEnabled = true;
 
         }
 
@@ -1128,6 +1164,7 @@ namespace GS_UpdDB
         }
 
         /************************************************************************/
+
     }
 
 }

@@ -15,7 +15,7 @@
         WindowStartupLocation="CenterScreen"
         Style="{StaticResource MainWindowStyle}">
 
-    <Grid >
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -24,10 +24,8 @@
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2.5*"/>
-                <ColumnDefinition />
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-
-
 
             <Grid Grid.Column="0">
 
@@ -62,7 +60,7 @@
                         Header="Параметры" 
                         Click="btnOptions_Click">
                         </MenuItem>
-                        <MenuItem Header="Обновление" Click="btnUpdate_Click"></MenuItem>
+                        <MenuItem x:Name="btnUpdate" Header="Обновление" Click="btnUpdate_Click"></MenuItem>
                         <MenuItem Header="О программе" Click="btnAbout_Click"></MenuItem>
                     </MenuItem>
                     <MenuItem 
@@ -78,7 +76,7 @@
                 Grid.Row="1"
                 VerticalAlignment="Stretch" 
                 Height="Auto"
-                Margin="20,10,10,10">
+                Margin="20,10,20,10">
                     <DockPanel 
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Stretch" 
@@ -114,7 +112,7 @@
 
                 <StackPanel                    
                 Grid.Row="2"     
-                Margin="20,10,0,5">
+                Margin="20,10,20,5">
                     <Button                        	
         		    x:Name="btnDBPathAdd"             	            
         		    Content="Добавить"                                                                 
@@ -135,7 +133,7 @@
                 CornerRadius="15" 
                 Width="auto"  
                 Height="150" 
-                Margin="20,0,10,0"
+                Margin="20,0,20,0"
                  >
                     <!--Border.BitmapEffect>
                 <DropShadowBitmapEffect Color="#FF343436"/>
@@ -180,18 +178,17 @@
                                 CanUserResize="False" 
                                 Width="Auto" 
                                 CanUserSort="False" 
-                                IsReadOnly="True"/>
+                                IsReadOnly="False"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
                 </Border>
 
-
                 <DockPanel 
                 Grid.Row="4"
                 VerticalAlignment="Stretch" 
                 Height="Auto"
-                Margin="20,20,10,0">
+                Margin="20,20,20,0">
                     <DockPanel 
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Stretch" 
@@ -240,7 +237,7 @@
 
                 <StackPanel      
                 Grid.Row="5"   
-                Margin="20,10,0,5">
+                Margin="20,10,20,5">
                     <Button
         	        x:Name="btnNameSpaceAdd"                        
         	        Click="btnNameSpaceAdd_Click" 
@@ -262,7 +259,7 @@
                 VerticalAlignment="Center"
                 Width="auto"  
                 Height="150" 
-                Margin="20,0,10,0"                
+                Margin="20,0,20,0"                
             >
                     <!--.BitmapEffect>
                 <DropShadowBitmapEffect Color="#FF343436"/>
@@ -322,9 +319,9 @@
                     </Grid>
                 </Border>
 
-
             </Grid>
         </Grid>
+
 
         <StatusBar
             Grid.Row="1"   
